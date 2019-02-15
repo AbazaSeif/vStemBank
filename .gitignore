@@ -1,0 +1,6 @@
+./Client_Java/nbproject
+./Client_Java/test
+./Server_PHP/nbproject
+./Server_PHP/tests
+./Server_PHP/composer.lock
+
