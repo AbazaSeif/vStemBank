@@ -4,3 +4,6 @@
 ./Server_PHP/tests
 ./Server_PHP/composer.lock
 
+/Adaptor/nbproject/private/
+/Adaptor/build/
+/Adaptor/dist/

@@ -17,7 +17,6 @@ class MY_Controller extends CI_Controller {
         parent::__construct($config);
         $this->load->library('form_validation');
         $this->load->library('session');
-        $this->load->library('phpserial');
         $this->load->helper('url');
 
         $this->load->model('Setting', 'setting', TRUE);
@@ -289,7 +288,7 @@ class MY_Controller extends CI_Controller {
 
     public function setIncrimentAmount($UserID, $Amount) {
         $AmountUser = $this->getAmount($UserID);
-        if ($AmountUser >= 0) {
+        if ($AmountUser > 0) {
             $AmountUser += $Amount;
             $this->UpdateAmount($UserID, $AmountUser);
             return true;

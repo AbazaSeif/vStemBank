@@ -19,48 +19,59 @@
                     <div class="form-group">
                         <label for="sel1">Выбрать группу:</label>
                         <?php if ($this->session->flashdata('sessionwork') == 0): ?>
-                            <select onclick="selectgroup()" class="form-control" id="group">
-                                <?php if (!is_null($Groplist)): ?>
-                                    <?php foreach ($Groplist as $group): ?>
-                                        <option value="<?php echo $group->id; ?>" <?php echo ($GSelect != null ? ($GSelect == $group->id ? 'selected' : '') : ''); ?>><?php echo $group->groupname; ?></option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
+                            <?php if (!is_null($Groplist)): ?>
+                                <select onclick="selectgroup()" class="form-control" id="group">
+                                    <?php if (!is_null($Groplist)): ?>
+                                        <?php foreach ($Groplist as $group): ?>
+                                            <option value="<?php echo $group->id; ?>" <?php echo ($GSelect != null ? ($GSelect == $group->id ? 'selected' : '') : ''); ?>><?php echo $group->groupname; ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            <?php else: ?>
+                                <input type="text" class="form-control input-group" disabled value="Нет группы найти">
+                            <?php endif; ?>
                             <?php
                         else:
                             $this->session->keep_flashdata('sessionwork');
                             ?>
-                            <label class="label label-danger"><?php echo $this->session->flashdata('sessionwork')['name']; ?></label>
+                            <input type="text" class="form-control input-group" value="<?php echo $this->session->flashdata('sessionwork')['name']; ?>" disabled>
                         <?php endif; ?>
                     </div>
-                    <a id="actionbtn" style="display: none;" href="" class="btn btn-xs btn-default btn-block">Загрузить группу</a>
                 </div>
                 <div class="col-sm-5">
                     <div class="form-group">
                         <label for="sel1">Тема урока:</label>
-                        <?php if ($this->session->flashdata('sessionwork') == 0): ?>
-                            <input type="text" class="form-control input-group" id="labellesson" value="">
+                        <?php if ($cStart == true): ?>
+                            <?php if ($this->session->flashdata('sessionwork') == 0): ?>
+                                <input type="text" class="form-control input-group" id="labellesson" value="">
+                            <?php else: ?>
+                                <input type="text" class="form-control input-group" disabled value="<?php echo $this->session->flashdata('sessionwork')['label']; ?>">
+                            <?php endif; ?>
                         <?php else: ?>
-                            <input type="text" class="form-control input-group" disabled value="<?php echo $this->session->flashdata('sessionwork')['label']; ?>">
+                            <input type="text" class="form-control input-group" disabled value="">
                         <?php endif; ?>
                     </div>
                 </div>
                 <br>
                 <div class="col-sm-2">
-                    <input type="hidden" id="groupidlesson" value="<?php echo (is_null($GSelect) ? $this->session->flashdata('sessionwork')['groupid'] : $GSelect); ?>">
-                    <?php if ($this->session->flashdata('sessionwork') == 0): ?>
-                        <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-success">Начните Урок</button>
-                        <?php
-                    else:
-                        $this->session->keep_flashdata('sessionwork');
-                        ?>
-                        <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-danger">заверщить урок</button>
+                    <?php if ($cStart == true): ?>
+                        <input type="hidden" id="groupidlesson" value="<?php echo (is_null($GSelect) ? $this->session->flashdata('sessionwork')['groupid'] : $GSelect); ?>">
+                        <?php if ($this->session->flashdata('sessionwork') == 0): ?>
+                            <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-success">Начните Урок</button>
+                            <?php
+                        else:
+                            $this->session->keep_flashdata('sessionwork');
+                            ?>
+                            <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-danger">заверщить урок</button>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <button type="button" class="btn btn-block btn-lg btn-success disabled">Начните Урок</button>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
         <hr>
-        <table id="tablestud" class="table table-condensed">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
                 <tr>
                     <th>№</th>
@@ -83,8 +94,8 @@
                             <td><?php echo $gUser->factor; ?></td>
                             <td><?php echo $gUser->lastlogin; ?></td>
                             <td><?php echo ($gUser->isBlock ? 'Да' : 'Нет'); ?></td>
-                            <td><center><a class="btn btn-xs btn-success" onclick="showAmountInc('<?php echo $gUser->id; ?>', '<?php echo $gUser->name; ?>')" style="width: 100px">+</a></center></td>
-                    <td><center><a class="btn btn-xs btn-danger" onclick="showAmountDinc('<?php echo $gUser->id; ?>', '<?php echo $gUser->name; ?>')"  style="width: 100px">-</a></center></td>
+                            <td><center><a class="btn btn-xs btn-success <?php echo (intval($gUser->online) == 0 ? 'disabled' : ''); ?>" onclick="showAmountInc('<?php echo $gUser->id; ?>', '<?php echo $gUser->name; ?>')" style="width: 100px">+</a></center></td>
+                    <td><center><a class="btn btn-xs btn-danger <?php echo (intval($gUser->online) == 0 ? 'disabled' : ''); ?>" onclick="showAmountDinc('<?php echo $gUser->id; ?>', '<?php echo $gUser->name; ?>')"  style="width: 100px">-</a></center></td>
                     </tr>
                     <?php
                     $index++;
@@ -93,6 +104,7 @@
             <?php endif; ?>
             </tbody>
         </table>
+
     </div>
 </div>
 <div class="modal fade" id="modelincriment" role="dialog">

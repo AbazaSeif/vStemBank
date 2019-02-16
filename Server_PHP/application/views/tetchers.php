@@ -30,11 +30,11 @@
                         <label for="name">ФИО</label>
                         <input type="text" required name="name" class="form-control input-group">
                     </div>
-                    <div class="col-sm-4">
-                        <label for="cardid">Карта</label>
-                        <a href="" onclick="scancard()" data-toggle="modal" data-target="#scaning" class="btn btn-xs btn-danger">Scan</a>
-                        <input type="text" readonly required name="cardid" id="cardid" class="form-control input-group">
-                    </div>
+                    <!--                    <div class="col-sm-4">
+                                            <label for="cardid">Карта</label>
+                                            <a href="" onclick="scancard()" data-toggle="modal" data-target="#scaning" class="btn btn-xs btn-danger">Scan</a>
+                                            <input type="text" readonly required name="cardid" id="cardid" class="form-control input-group">
+                                        </div>-->
                     <div class="col-sm-4">
                         <label for="birthdate">Дата рождения</label>
                         <input type="date" required name="birthdate" class="form-control input-group">
@@ -97,6 +97,7 @@
                         <?php else: ?>
                             <a onclick="admin(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-success">Администратор</a>
                         <?php endif; ?>
+                        <a onclick="edit(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-primary">редактировать</a>
                         <?php if ($gUser->isBlock): ?>
                             <a onclick="unblock(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-warning">открыть</a>
                         <?php else: ?>

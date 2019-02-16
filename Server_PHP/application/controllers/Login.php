@@ -6,6 +6,15 @@ class Login extends MY_Controller {
 
     public function index() {
         $Data = $this->getBasicData();
+        //Get Users
+        $UsersList1 = $this->tusers->get(['isTecher' => 1]);
+        $UsersList2 = $this->tusers->get(['isAdmin' => 1]);
+        if (!is_null($UsersList1)) {
+            $UsersList = array_merge($UsersList1, $UsersList2);
+        } else {
+            $UsersList = $UsersList2;
+        }
+        $Data['UList'] = $UsersList;
         $this->load->view('include/header', $Data);
         $this->load->view('login', $Data);
         $this->load->view('include/footer', $Data);
@@ -30,7 +39,17 @@ class Login extends MY_Controller {
                 foreach ($DataUser as $key => $val) {
                     $this->session->set_userdata($key, $val);
                 }
-                redirect(site_url() . 'home');
+
+                $DataCheck = $this->workgroups->get(['tetcher' => $this->session->id, 'status' => 1])[0];
+                if (!is_null($DataCheck)) {
+                    $GroupName = $this->getGroupsWhere(['id' => $DataCheck->groupid])[0]->groupname;
+                    $this->session->set_flashdata('sessionIDwork', $DataCheck->id);
+                    $DataCheck->name = $GroupName;
+                    $this->session->set_flashdata('sessionwork', get_object_vars($DataCheck));
+                    redirect(site_url() . 'home/' . $DataCheck->groupid);
+                } else {
+                    redirect(site_url() . 'home');
+                }
             }
         }
     }

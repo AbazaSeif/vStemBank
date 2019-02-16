@@ -45,21 +45,26 @@ class Home extends MY_Controller {
                 if (!is_null($Users)) {
                     $Data['GSelect'] = $ID;
                     $Data['uGroup'] = $Users;
+                    $Data['cStart'] = true;
                 } else {
                     $Data['GSelect'] = $ID;
                     $Data['uGroup'] = null;
+                    $Data['cStart'] = false;
                 }
             } else {
                 $Data['GSelect'] = $ID;
                 $Data['uGroup'] = null;
+                $Data['cStart'] = false;
             }
         } else {
             $Data['GSelect'] = $ID;
             $Data['uGroup'] = null;
+            $Data['cStart'] = false;
         }
         $this->load->view('include/header', $Data);
         $this->load->view('include/basic_header', $Data);
         $this->load->view('lessons', $Data);
+//        $this->load->view('lessonstudintable', $Data);
         $this->load->view('include/footer', $Data);
     }
 
@@ -97,14 +102,31 @@ class Home extends MY_Controller {
         $this->homepage($Data['groupid']);
     }
 
+    public function checktimeforamount() {
+        $groupid = $this->session->flashdata('sessionIDwork');
+        if (!is_null($groupid)) {
+            $GData = $this->workgroups->get(['id' => $groupid, 'status' => 1])[0];
+            $StartTime = new DateTime($GData->timestart);
+            $TimeNow = new DateTime(date("Y/m/d H:i:s"));
+            $invter = $StartTime->diff($TimeNow);
+            $Time = $invter->format('%h') . ':' . $invter->format('%i') . ':' . $invter->format('%s');
+            if ($invter->format('%i') == $this->getSetting()->longcharge) {
+                $AmountStart = $this->getSetting()->startsession;
+                $this->setIncrimentAmount($this->session->id, $AmountStart);
+            } else {
+                $AmountStart = $this->getAmount($this->session->id);
+            }
+            echo json_encode(['time' => $Time, 'amount' => $AmountStart]);
+        }
+    }
+
     public function startlesson() {
         $label = $this->input->post('lbl');
         $groupid = $this->input->post('gro');
-        $AmountStart = $this->getSetting()->startsession;
-        $this->setIncrimentAmount($this->session->id, $AmountStart);
         $GroupName = $this->getGroupsWhere(['id' => $groupid])[0]->groupname;
         $Data = [
             'groupid' => $groupid,
+            'tetcher' => $this->session->id,
             'label' => $label,
             'timestart' => date("Y/m/d H:i:s"),
             'timeend' => '00:00:00',
@@ -133,7 +155,7 @@ class Home extends MY_Controller {
         $this->setResetAmount($this->session->id);
         $GroupWorkID = $this->session->flashdata('sessionIDwork');
         $this->UpdateFactorTableForGroup($GroupWorkID);
-        $this->workgroups->update($Data, ['groupid' => $groupid, 'status' => 1]);
+        $this->workgroups->update($Data, ['groupid' => $groupid, 'status' => 1, 'tetcher' => $this->session->id]);
         $this->session->set_flashdata('sessionwork', 0);
         $this->session->set_flashdata('sessionIDwork', 0);
         echo $this->getAmount($this->session->id);
@@ -143,7 +165,7 @@ class Home extends MY_Controller {
         $Data = $this->getBasicData();
         $Groups = $this->getGroups();
         $Data['Groplistgeneral'] = $Groups;
-        $Tetchers = $this->getTetchers();
+        $Tetchers = $this->getStudints();
         $Data['tetcher'] = $Tetchers;
 
         $DataPass = $this->session->flashdata('groupreport');
@@ -227,6 +249,10 @@ class Home extends MY_Controller {
     }
 
     public function logout() {
+        $GroupWorkID = $this->session->flashdata('sessionIDwork');
+        if ($GroupWorkID != 0 || !is_null($GroupWorkID)) {
+            $this->endlesson();
+        }
         $this->session->sess_destroy();
         redirect(base_url());
     }

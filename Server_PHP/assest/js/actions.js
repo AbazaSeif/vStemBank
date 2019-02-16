@@ -1,10 +1,8 @@
-let timer = new easytimer.Timer();
+$("#dataTable").DataTable()
 function selectgroup() {
     var groupid = $("#group").val();
     var URL = $("#murl").val();
-    $("#actionbtn").attr("href", "");
-    $("#actionbtn").attr("href", URL + "home/" + groupid);
-    $("#actionbtn").show();
+    location.replace(URL + "home/" + groupid);
 }
 
 function showAmountInc(id, name) {
@@ -48,12 +46,8 @@ function startlesson() {
         $.post(URL + 'startlessonf', {
             lbl: lblless,
             gro: groless
-        }, function (data) {
-            $("#amoutn").html($.trim(data));
-            timer.start();
-            timer.addEventListener('secondsUpdated', function (e) {
-                $('#timerler').html(timer.getTimeValues().toString());
-            });
+        }, function () {
+
         });
     } else {
         $("#btnstarttot").removeClass('btn-danger');
@@ -64,7 +58,6 @@ function startlesson() {
             gro: groless
         }, function (data) {
             $("#amoutn").html($.trim(data));
-            timer = null;
             $('#timerler').html("00:00:00");
             location.reload();
         });
@@ -139,6 +132,10 @@ function unadmin(id) {
     }, function () {
         location.reload();
     });
+}
+function edit(id) {
+    var URL = $("#murl").val();
+    location.replace(URL + 'edit/' + id);
 }
 function block(id) {
     var URL = $("#murl").val();
@@ -231,3 +228,15 @@ function poweroff(id) {
         location.reload();
     });
 }
+function checktime() {
+    var URL = $("#murl").val();
+    $.post(URL + 'checktime', null, function (data) {
+        var d = JSON.parse(data);
+        $('#timerler').html(d.time);
+        $('#amoutn').html(d.amount);
+    });
+}
+setInterval(function () {
+    checktime() // this will run after every 5 seconds
+}, 1000);
+

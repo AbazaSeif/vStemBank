@@ -47,21 +47,20 @@ class Admin extends MY_Controller {
     }
 
     public function Readcard() {
-        $this->phpserial->deviceSet($this->getSetting()->serialport);
-        $this->phpserial->confBaudRate($this->getSetting()->serialbaudrate);
-        $this->phpserial->confParity("none");
-        $this->phpserial->confCharacterLength(8);
-        $this->phpserial->confStopBits(1);
-        $this->phpserial->confFlowControl("none");
-        $this->phpserial->deviceOpen();
-        sleep(1);
-        $read = '';
-        do {
-            $read = $this->phpserial->readPort();
-        } while ((strpos($read, 'TRUE') === false));
-        echo explode(':', $read)[1];
-        $this->phpserial->sendMessage("C");
-        $this->phpserial->deviceClose();
+        $Data = null;
+        $Path = $this->config->item('SCANFILE');
+        while (true) {
+            foreach (file($Path) as $line) {
+                if ((strlen($line) > 1) && (!empty($line))) {
+                    $Data = $line;
+                    break;
+                }
+            }
+            if (strlen($Data) > 0) {
+                break;
+            }
+        }
+        echo $Data;
     }
 
     public function uploadimage() {
@@ -81,7 +80,7 @@ class Admin extends MY_Controller {
             $TData = [
                 'image' => $TetData['image'],
                 'name' => $TetData['name'],
-                'cardid' => $TetData['cardid'],
+                'cardid' => $TetData['name'], //$TetData['cardid'],
                 'password' => $TetData['password'],
                 'phonenumber' => $TetData['phone'],
                 'birthdate' => $TetData['birthdate'],
@@ -304,7 +303,7 @@ class Admin extends MY_Controller {
         }
         redirect(base_url() . 'lstudints');
     }
-    
+
     public function studentaddtogroup() {
         $TetData = $this->input->post(NULL, TRUE);
         $ID = $TetData['userlistid'];
@@ -389,6 +388,47 @@ class Admin extends MY_Controller {
             $this->setMessage('error', "Баланс не обновлен");
         }
         redirect(base_url() . 'lstudints');
+    }
+
+    public function edituser($UserID) {
+        if (!is_null($UserID)) {
+            $Data = $this->getBasicData();
+            $Data['GroupList'] = $this->getGroups();
+            $UserData = $this->tusers->get(['id' => $UserID])[0];
+            $Data['uData'] = $UserData;
+
+            $this->load->view('include/header', $Data);
+            $this->load->view('include/basic_header', $Data);
+            $this->load->view('tetchersedit', $Data);
+            $this->load->view('include/footer', $Data);
+        } else {
+            redirect(base_url() . 'tetchers');
+        }
+    }
+
+    public function dataupdate() {
+        $TetData = $this->input->post(NULL, TRUE);
+        if (count($TetData) > 0) {
+            $TData = [
+                'image' => $TetData['image'],
+                'name' => $TetData['name'],
+                'cardid' => $TetData['name'],
+                'password' => $TetData['password'],
+                'phonenumber' => $TetData['phone'],
+                'birthdate' => $TetData['birthdate'],
+                'notes1' => $TetData['note']
+            ];
+            $this->tusers->update($TData, ['id' => $TetData['userid']]);
+            foreach ($TetData['grops'] as $GroupID) {
+                $GroupData = [
+                    'groupid' => $GroupID
+                ];
+                $this->ttetgroups->update($GroupData, ['tetcherid' => $TetData['userid']]);
+            }
+
+            $this->setMessage('success', 'Данные обновлены');
+        }
+        redirect(base_url() . 'tetchers');
     }
 
 }

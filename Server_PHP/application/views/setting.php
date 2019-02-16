@@ -24,12 +24,11 @@
                 </div>
                 <div class="col-lg-3">
                     <label for="charge">Быстрые кнопки при начислении и списании</label><br>
-                    <?php
-                    $ListB = explode(",", $settings->chargebutton);
-                    foreach ($ListB as $inp):
-                        ?>
-                        <input type="number" style="width: 15%;" value="<?php echo $inp; ?>" name="chargebutton[]" >
-                    <?php endforeach; ?>
+                    <?php $ListB = explode(",", $settings->chargebutton); ?>
+                    <input type="number" style="width: 15%;" value="<?php echo $ListB[0]; ?>" name="chargebutton[]" >
+                    <input type="number" style="width: 15%;" value="<?php echo $ListB[1]; ?>" name="chargebutton[]" >
+                    <input type="number" style="width: 15%;" value="<?php echo $ListB[2]; ?>" name="chargebutton[]" >
+                    <input type="number" style="width: 15%;" value="<?php echo $ListB[3]; ?>" name="chargebutton[]" >
                 </div>
                 <div class="col-lg-3">
                     <label for="longcharge">Через какое время после начала урока начислить монеты преподавателю</label>
@@ -46,6 +45,10 @@
                 <div class="col-lg-3">
                     <label for="votingcoin">Сколько монет начислить за голосование?</label>
                     <input type="number" value="<?php echo $settings->votingcoin; ?>" name="votingcoin" class="form-control input-group">
+                </div>
+                <div class="col-lg-3">
+                    <label for="">Награда для студентов</label>
+                    <input type="number" value="<?php echo $settings->rewardamount; ?>" name="rewardamount" class="form-control input-group">
                 </div>
                 <div class="col-lg-3">
                     <label for="serialport">Последовательный порт для считывателя RFID</label>

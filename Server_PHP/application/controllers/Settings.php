@@ -25,9 +25,26 @@ class Settings extends MY_Controller {
         $this->load->view('include/footer', $Data);
     }
 
+    public function save() {
+        $SData = $this->input->post(NULL, TRUE);
+        if (!is_null($SData)) {
+            $SData['chargebutton'] = implode(",", $SData['chargebutton']);
+            $this->setting->set($SData);
+            $this->setMessage('success', 'Обновление системы');
+            redirect(base_url() . 'setting');
+        } else {
+            $this->setMessage('error', 'Система не обновляется');
+            redirect(base_url() . 'setting');
+        }
+    }
+
     public function update() {
         $SData = $this->input->post(NULL, TRUE);
         if (!is_null($SData)) {
+            $DataSetting = $this->setting->get(['id' => 1])[0];
+            if (is_null($DataSetting)) {
+                $this->save();
+            }
             $SData['chargebutton'] = implode(",", $SData['chargebutton']);
             $this->setting->update($SData, ['id' => 1]);
             $this->setMessage('success', 'Обновление системы');
