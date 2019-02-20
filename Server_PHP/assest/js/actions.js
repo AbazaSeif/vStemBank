@@ -1,7 +1,185 @@
-$("#dataTable").DataTable()
+$(document).ready(function () {
+    $('#dataTablelesson').DataTable();
+    $('#dataTablegroups').DataTable();
+    $('#dataTablestudent').DataTable();
+    var dataTabletetchers = $('#dataTabletetchers').DataTable();
+    var dataTablegroups = $('#dataTablegroups').DataTable();
+    var dataTablestudent = $('#dataTablestudent').DataTable();
+
+    let URL = $("#murl").val();
+    $('#dataTabletetchers tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('bg-primary')) {
+            $(this).removeClass('bg-primary');
+            $("#nametet").val("");
+            $("#birthdaytet").val("");
+            $("#phonetet").val("");
+            $("#notetet").val("");
+            $("#passtet").val("");
+            $("#uid").val("");
+            $("#blah").attr('src', URL + "assest/user.png");
+            $("#grops option:selected").prop("selected", false)
+            $("#tetcherform").attr("action", URL + "datasave");
+            $("#actionbtn").html("Создать");
+            $("#cancelbtn").hide();
+        } else {
+            dataTabletetchers.$('tr.bg-primary').removeClass('bg-primary');
+            $(this).addClass('bg-primary');
+            var tin = $(this).attr('id');
+            $.post(URL + 'tinfo', {tetinfo: tin}, function (data) {
+                if (data !== '') {
+                    var rData = JSON.parse(data);
+                    $("#nametet").val(rData.name);
+                    $("#birthdaytet").val(rData.birthdate);
+                    $("#phonetet").val(rData.phonenumber);
+                    $("#notetet").val(rData.note1);
+                    $("#passtet").val(rData.password);
+                    $("#userid").val(rData.id);
+                    if (rData.image !== "") {
+                        $("#blah").attr('src', URL + "image_upload/" + rData.image);
+                    }
+                    var Group = JSON.parse(rData.group);
+                    $("#grops option:selected").prop("selected", false)
+                    $.each(Group, function (key, value) {
+                        $("#grops option[value=" + value.id + "]").prop('selected', true);
+                    });
+                    $("#tetcherform").attr("action", URL + "dataupdate");
+                    $("#actionbtn").html("обновление");
+                    $("#cancelbtn").show();
+                }
+            });
+        }
+    });
+
+    $('#cancelbtn').click(function () {
+        dataTabletetchers.$('tr.bg-primary').removeClass('bg-primary');
+        $("#nametet").val("");
+        $("#birthdaytet").val("");
+        $("#phonetet").val("");
+        $("#notetet").val("");
+        $("#passtet").val("");
+        $("#uid").val("");
+        $("#grops option:selected").prop("selected", false)
+        $("#blah").attr('src', URL + "assest/user.png");
+        $("#tetcherform").attr("action", URL + "datasave");
+        $("#actionbtn").html("Создать");
+        $("#cancelbtn").hide();
+    });
+
+    //Groups
+    $('#dataTablegroups tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('bg-primary')) {
+            $(this).removeClass('bg-primary');
+            $("#gname").val("");
+            $("#gitemname").val("");
+            $("#desc").val("");
+            $("#gid").val("");
+            $("#cancelbtn").hide();
+            $("#actionbtn").html("Создать");
+            $("#groupform").attr('action', URL + 'creategroup');
+
+        } else {
+            dataTablegroups.$('tr.bg-primary').removeClass('bg-primary');
+            $(this).addClass('bg-primary');
+            var tin = $(this).attr('id');
+            $.post(URL + 'ginfo', {groinfo: tin}, function (data) {
+                if (data !== '') {
+                    var rData = JSON.parse(data);
+                    $("#gname").val(rData.groupname);
+                    $("#gitemname").val(rData.materials);
+                    $("#desc").val(rData.description);
+                    $("#gid").val(rData.id);
+                    $("#actionbtn").html("обновление");
+                    $("#cancelbtn").show();
+                    $("#groupform").attr('action', URL + 'upgradegroup');
+                }
+            });
+        }
+    });
+
+    $('#cancelbtn').click(function () {
+        dataTablegroups.$('tr.bg-primary').removeClass('bg-primary');
+        $("#gname").val("");
+        $("#gitemname").val("");
+        $("#desc").val("");
+        $("#cancelbtn").hide();
+        $("#actionbtn").html("Создать");
+        $("#groupform").attr('action', URL + 'creategroup');
+    });
+
+
+    //Student
+    $('#dataTablestudent tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('bg-primary')) {
+            $(this).removeClass('bg-primary');
+            $("#name").val("");
+            $("#cardid").val("");
+            $("#mothername").val("");
+            $("#birthdate").val("");
+            $("#motherphone").val("");
+            $("#phone").val("");
+            $("#note").val("");
+            $("#userid").val("");
+            $("#blah").attr('src', URL + "assest/user.png");
+            $("#grops option:selected").prop("selected", false)
+            $("#formstudent").attr("action", URL + "createstuding");
+            $("#actionbtn").html("Создать");
+            $("#cancelbtn").hide();
+
+        } else {
+            dataTablestudent.$('tr.bg-primary').removeClass('bg-primary');
+            $(this).addClass('bg-primary');
+            var tin = $(this).attr('id');
+            $.post(URL + 'stinfo', {stinfo: tin}, function (data) {
+                if (data !== '') {
+                    var rData = JSON.parse(data);
+                    $("#name").val(rData.name);
+                    $("#cardid").val(rData.cardid);
+                    $("#mothername").val(rData.parentname);
+                    $("#birthdate").val(rData.birthdate);
+                    $("#motherphone").val(rData.parentphone);
+                    $("#phone").val(rData.phonenumber);
+                    $("#note").val(rData.notes1);
+                    $("#userid").val(rData.id);
+                    if (rData.image !== "") {
+                        $("#blah").attr('src', URL + "image_upload/" + rData.image);
+                    } else {
+                        $("#blah").attr('src', URL + "assest/user.png");
+                    }
+                    var Group = JSON.parse(rData.group);
+                    $("#grops option:selected").prop("selected", false)
+                    $.each(Group, function (key, value) {
+                        $("#grops option[value=" + value.id + "]").prop('selected', true);
+                    });
+                    $("#formstudent").attr("action", URL + "studupdate");
+                    $("#actionbtn").html("Создать");
+                    $("#cancelbtn").show();
+                }
+            });
+        }
+    });
+
+    $('#cancelbtn').click(function () {
+        dataTablestudent.$('tr.bg-primary').removeClass('bg-primary');
+        $("#name").val("");
+        $("#cardid").val("");
+        $("#mothername").val("");
+        $("#birthdate").val("");
+        $("#motherphone").val("");
+        $("#phone").val("");
+        $("#note").val("");
+        $("#userid").val("");
+        $("#blah").attr('src', URL + "assest/user.png");
+        $("#grops option:selected").prop("selected", false)
+        $("#formstudent").attr("action", URL + "createstuding");
+        $("#actionbtn").html("Создать");
+        $("#cancelbtn").hide();
+    });
+
+
+});
 function selectgroup() {
-    var groupid = $("#group").val();
-    var URL = $("#murl").val();
+    let groupid = $("#group").val();
+    let URL = $("#murl").val();
     location.replace(URL + "home/" + groupid);
 }
 
@@ -33,7 +211,17 @@ function setival(value) {
 function setdval(value) {
     $("#valuedein").val(value);
 }
-
+function checktime() {
+    var URL = $("#murl").val();
+    $.post(URL + 'checktime', null, function (data) {
+        try {
+            var d = JSON.parse(data);
+            $('#timerler').html(d.time);
+            $('#amoutn').html(d.amount);
+        } catch (e) {
+        }
+    });
+}
 function startlesson() {
     var URL = $("#murl").val();
     var status = $("#btnstarttot").html();
@@ -47,7 +235,6 @@ function startlesson() {
             lbl: lblless,
             gro: groless
         }, function () {
-
         });
     } else {
         $("#btnstarttot").removeClass('btn-danger');
@@ -59,6 +246,7 @@ function startlesson() {
         }, function (data) {
             $("#amoutn").html($.trim(data));
             $('#timerler').html("00:00:00");
+
             location.reload();
         });
     }
@@ -70,9 +258,9 @@ function getReport() {
     var Group = $("#grorepo").val();
     $.post(URL + 'actionreport', {
         groupid: Group,
-        tetcherid: Tetcher
+        studname: Tetcher
     }, function () {
-        location.reload();
+        location.reload(URL + 'report');
     });
 }
 
@@ -82,9 +270,9 @@ function getClassReport() {
     var Group = $("#grorepo").val();
     $.post(URL + 'actionclasses', {
         groupid: Group,
-        tetcherid: Tetcher
+        tetchername: Tetcher
     }, function () {
-        location.reload();
+        location.reload(URL + 'classes');
     });
 }
 
@@ -228,15 +416,128 @@ function poweroff(id) {
         location.reload();
     });
 }
-function checktime() {
+function closeallcomputer() {
     var URL = $("#murl").val();
-    $.post(URL + 'checktime', null, function (data) {
-        var d = JSON.parse(data);
-        $('#timerler').html(d.time);
-        $('#amoutn').html(d.amount);
+    $.post(URL + 'poweroffall', null, function () {
+        location.reload();
+    });
+}
+
+
+function autocomplete(inp, arr) {
+    /*the autocomplete function takes two arguments,
+     the text field element and an array of possible autocompleted values:*/
+    var currentFocus;
+    /*execute a function when someone writes in the text field:*/
+    inp.addEventListener("input", function (e) {
+        var a, b, i, val = this.value;
+        /*close any already open lists of autocompleted values*/
+        closeAllLists();
+        if (!val) {
+            return false;
+        }
+        currentFocus = -1;
+        /*create a DIV element that will contain the items (values):*/
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        /*append the DIV element as a child of the autocomplete container:*/
+        this.parentNode.appendChild(a);
+        /*for each item in the array...*/
+        for (i = 0; i < arr.length; i++) {
+            /*check if the item starts with the same letters as the text field value:*/
+            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                /*create a DIV element for each matching element:*/
+                b = document.createElement("DIV");
+                /*make the matching letters bold:*/
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                /*insert a input field that will hold the current array item's value:*/
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                /*execute a function when someone clicks on the item value (DIV element):*/
+                b.addEventListener("click", function (e) {
+                    /*insert the value for the autocomplete text field:*/
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    /*close the list of autocompleted values,
+                     (or any other open lists of autocompleted values:*/
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        }
+    });
+    /*execute a function presses a key on the keyboard:*/
+    inp.addEventListener("keydown", function (e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x)
+            x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) {
+            /*If the arrow DOWN key is pressed,
+             increase the currentFocus variable:*/
+            currentFocus++;
+            /*and and make the current item more visible:*/
+            addActive(x);
+        } else if (e.keyCode == 38) { //up
+            /*If the arrow UP key is pressed,
+             decrease the currentFocus variable:*/
+            currentFocus--;
+            /*and and make the current item more visible:*/
+            addActive(x);
+        } else if (e.keyCode == 13) {
+            /*If the ENTER key is pressed, prevent the form from being submitted,*/
+            e.preventDefault();
+            if (currentFocus > -1) {
+                /*and simulate a click on the "active" item:*/
+                if (x)
+                    x[currentFocus].click();
+            }
+        }
+    });
+    function addActive(x) {
+        /*a function to classify an item as "active":*/
+        if (!x)
+            return false;
+        /*start by removing the "active" class on all items:*/
+        removeActive(x);
+        if (currentFocus >= x.length)
+            currentFocus = 0;
+        if (currentFocus < 0)
+            currentFocus = (x.length - 1);
+        /*add class "autocomplete-active":*/
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+        /*a function to remove the "active" class from all autocomplete items:*/
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+    function closeAllLists(elmnt) {
+        /*close all autocomplete lists in the document,
+         except the one passed as an argument:*/
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+    /*execute a function when someone clicks in the document:*/
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
     });
 }
 setInterval(function () {
     checktime() // this will run after every 5 seconds
 }, 1000);
-
+try {
+    $("#tetchcomp").keyup(function () {
+        if ($(this).val() == "") {
+            $("#getReportbtn").addClass('disabled');
+        } else {
+            $("#getReportbtn").removeClass('disabled');
+        }
+    });
+    autocomplete(document.getElementById("tetchcomp"), dataname);
+} catch (e) {
+}

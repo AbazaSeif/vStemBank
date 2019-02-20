@@ -14,7 +14,7 @@ class Login extends MY_Controller {
         } else {
             $UsersList = $UsersList2;
         }
-        $Data['UList'] = $UsersList;
+        $Data['UList'] = array_diff_key($UsersList, array_unique($UsersList));
         $this->load->view('include/header', $Data);
         $this->load->view('login', $Data);
         $this->load->view('include/footer', $Data);

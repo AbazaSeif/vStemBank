@@ -49,7 +49,8 @@ class Admin extends MY_Controller {
     public function Readcard() {
         $Data = null;
         $Path = $this->config->item('SCANFILE');
-        while (true) {
+        $Loop = 0;
+        while ($Loop <= 500) {
             foreach (file($Path) as $line) {
                 if ((strlen($line) > 1) && (!empty($line))) {
                     $Data = $line;
@@ -59,8 +60,13 @@ class Admin extends MY_Controller {
             if (strlen($Data) > 0) {
                 break;
             }
+            $Loop++;
         }
-        echo $Data;
+        if (is_null($Data)) {
+            echo 'Не найденная карта';
+        } else {
+            echo $Data;
+        }
     }
 
     public function uploadimage() {
@@ -87,18 +93,23 @@ class Admin extends MY_Controller {
                 'notes1' => $TetData['note'],
                 'isTecher' => 1
             ];
-            $ID = $this->tusers->set($TData);
-            foreach ($TetData['grops'] as $GroupID) {
-                $GroupData = [
-                    'groupid' => $GroupID,
-                    'tetcherid' => $ID
-                ];
-                $this->ttetgroups->set($GroupData);
-            }
+            $chk = $this->tusers->get(['name' => $TData['name']])[0];
+            if (is_null($chk)) {
+                $ID = $this->tusers->set($TData);
+                foreach ($TetData['grops'] as $GroupID) {
+                    $GroupData = [
+                        'groupid' => $GroupID,
+                        'tetcherid' => $ID
+                    ];
+                    $this->ttetgroups->set($GroupData);
+                }
 
-            $this->setMessage('success', 'Данные сохранены');
+                $this->setMessage('success', 'Данные сохранены');
+            } else {
+                $this->setMessage('error', 'Это имя существует в базе данных');
+            }
         }
-        redirect(base_url() . 'tetchers');
+        redirect(base_url() . 'teachers');
     }
 
     public function addtogroup() {
@@ -115,7 +126,7 @@ class Admin extends MY_Controller {
             }
         }
         $this->setMessage('success', 'обновленный');
-        redirect(base_url() . 'tetchers');
+        redirect(base_url() . 'teachers');
     }
 
     public function makeadmin() {
@@ -278,6 +289,8 @@ class Admin extends MY_Controller {
     public function createstuding() {
         $StudData = $this->input->post(NULL, TRUE);
         if (count($StudData) > 0) {
+            $ParName = dirname(APPPATH);
+            $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . $StudData['cardid'];
             $TData = [
                 'image' => $StudData['image'],
                 'name' => $StudData['name'],
@@ -287,21 +300,28 @@ class Admin extends MY_Controller {
                 'phonenumber' => $StudData['phone'],
                 'birthdate' => $StudData['birthdate'],
                 'notes1' => $StudData['note'],
+                'Dirpath' => $Path,
                 'isStudent' => 1,
                 'factor' => 0,
             ];
-            $ID = $this->tusers->set($TData);
-            foreach ($StudData['grops'] as $GroupID) {
-                $GroupData = [
-                    'groupid' => $GroupID,
-                    'userid' => $ID
-                ];
-                $this->tusersg->set($GroupData);
-            }
+            $chk = $this->tusers->get(['cardid' => $TData['cardid']])[0];
+            if (is_null($chk)) {
+                $ID = $this->tusers->set($TData);
+                foreach ($StudData['grops'] as $GroupID) {
+                    $GroupData = [
+                        'groupid' => $GroupID,
+                        'userid' => $ID
+                    ];
+                    $this->tusersg->set($GroupData);
+                }
+                mkdir($Path, 0777);
 
-            $this->setMessage('success', 'Данные сохранены');
+                $this->setMessage('success', 'Данные сохранены');
+            } else {
+                $this->setMessage('error', 'Этот номер карты существует в базе данных');
+            }
         }
-        redirect(base_url() . 'lstudints');
+        redirect(base_url() . 'students');
     }
 
     public function studentaddtogroup() {
@@ -318,7 +338,7 @@ class Admin extends MY_Controller {
             }
         }
         $this->setMessage('success', 'обновленный');
-        redirect(base_url() . 'lstudints');
+        redirect(base_url() . 'students');
     }
 
     public function blockstudent() {
@@ -364,14 +384,14 @@ class Admin extends MY_Controller {
         $Amount = $Data['valueinput'];
         if (empty($Amount)) {
             $this->setMessage('error', "Баланс не обновлен");
-            redirect(base_url() . 'lstudints');
+            redirect(base_url() . 'students');
         }
         if ($this->setIncrimentAmount($usedid, $Amount)) {
             $this->setMessage('success', "Баланс обновлен");
         } else {
             $this->setMessage('error', "Баланс не обновлен");
         }
-        redirect(base_url() . 'lstudints');
+        redirect(base_url() . 'students');
     }
 
     public function StudentDincrimentAmount() {
@@ -380,14 +400,14 @@ class Admin extends MY_Controller {
         $Amount = $Data['valueinput'];
         if (empty($Amount)) {
             $this->setMessage('error', "Баланс не обновлен");
-            redirect(base_url() . 'lstudints');
+            redirect(base_url() . 'students');
         }
         if ($this->setDincrimentAmount($usedid, $Amount)) {
             $this->setMessage('success', "Баланс обновлен");
         } else {
             $this->setMessage('error', "Баланс не обновлен");
         }
-        redirect(base_url() . 'lstudints');
+        redirect(base_url() . 'students');
     }
 
     public function edituser($UserID) {
@@ -402,7 +422,7 @@ class Admin extends MY_Controller {
             $this->load->view('tetchersedit', $Data);
             $this->load->view('include/footer', $Data);
         } else {
-            redirect(base_url() . 'tetchers');
+            redirect(base_url() . 'teachers');
         }
     }
 
@@ -419,16 +439,96 @@ class Admin extends MY_Controller {
                 'notes1' => $TetData['note']
             ];
             $this->tusers->update($TData, ['id' => $TetData['userid']]);
+            $this->ttetgroups->delete(['tetcherid' => $TetData['userid']]);
             foreach ($TetData['grops'] as $GroupID) {
-                $GroupData = [
-                    'groupid' => $GroupID
-                ];
-                $this->ttetgroups->update($GroupData, ['tetcherid' => $TetData['userid']]);
+                $this->ttetgroups->set(['tetcherid' => $TetData['userid'], 'groupid' => $GroupID]);
             }
 
             $this->setMessage('success', 'Данные обновлены');
         }
-        redirect(base_url() . 'tetchers');
+        redirect(base_url() . 'teachers');
+    }
+
+    public function studeintsupdate() {
+        $TetData = $this->input->post(NULL, TRUE);
+        if (count($TetData) > 0) {
+            $TData = [
+                'image' => $TetData['image'],
+                'name' => $TetData['name'],
+                'cardid' => $TetData['name'],
+                'parentname' => $TetData['mothername'],
+                'parentphone' => $TetData['motherphone'],
+                'phonenumber' => $TetData['phone'],
+                'birthdate' => $TetData['birthdate'],
+                'notes1' => $TetData['note']
+            ];
+            $this->tusers->update($TData, ['id' => $TetData['userid']]);
+            $this->tusersg->delete(['userid' => $TetData['userid']]);
+            foreach ($TetData['grops'] as $GroupID) {
+                $this->tusersg->set(['userid' => $TetData['userid'], 'groupid' => $GroupID]);
+            }
+
+            $this->setMessage('success', 'Данные обновлены');
+        }
+        redirect(base_url() . 'students');
+    }
+
+    public function upgradegroup() {
+        $GrData = $this->input->post(NULL, TRUE);
+        if (count($GrData) > 0) {
+            $GroupData = [
+                'groupname' => $GrData['gname'],
+                'materials' => $GrData['gitemname'],
+                'description' => $GrData['desc']
+            ];
+            $this->tgroups->update($GroupData, ['id' => $GrData['gid']]);
+            $this->setMessage('success', 'Новая группа создана');
+        } else {
+            $this->setMessage('error', 'Нет ввод находки');
+        }
+        redirect(base_url() . 'ngroups');
+    }
+
+    public function getTecherInformations() {
+        $ID = $this->input->post('tetinfo');
+        $Data = $this->getTetcherInfo(['id' => $ID]);
+        if (!is_null($Data)) {
+            $GData = $this->getTetcherGroups($Data->id);
+            if (!is_null($GData)) {
+                $Data->group = json_encode($GData);
+            } else {
+                $Data->group = "";
+            }
+            echo json_encode($Data);
+        } else {
+            echo '';
+        }
+    }
+
+    public function getStudentsInformations() {
+        $ID = $this->input->post('stinfo');
+        $Data = $this->getStudintInfo(['id' => $ID]);
+        if (!is_null($Data)) {
+            $GData = $this->getStudintGroup($Data->id);
+            if (!is_null($GData)) {
+                $Data->group = json_encode($GData);
+            } else {
+                $Data->group = "";
+            }
+            echo json_encode($Data);
+        } else {
+            echo '';
+        }
+    }
+
+    public function getGroupInformations() {
+        $ID = $this->input->post('groinfo');
+        $Groupdata = $this->getAllGroupsWhere(['id' => $ID])[0];
+        if (!is_null($Groupdata)) {
+            echo json_encode($Groupdata);
+        } else {
+            echo '';
+        }
     }
 
 }

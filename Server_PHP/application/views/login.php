@@ -16,6 +16,7 @@
                 <div class="form-group">
                     <label for="login">Логин</label>
                     <select name="username" class="form-control" id="login">
+                        <?php rsort($UList); ?>
                         <?php foreach ($UList as $users): ?>
                             <option value="<?php echo $users->cardid; ?>"><?php echo $users->name; ?></option>
                         <?php endforeach; ?>
@@ -24,6 +25,7 @@
             </div>
             <br><br>
             <div class="col-sm-9">
+                <label for="password">Пароль</label>
                 <input name="password" type="password" placeholder="пароль" class="form-control" />
             </div>
             <div class="col-sm-9">

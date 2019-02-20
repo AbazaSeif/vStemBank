@@ -121,7 +121,18 @@ class MY_Controller extends CI_Controller {
     }
 
     public function getGroupsWhere($Where) {
-        $Where['active'] = 0;
+        if (!array_key_exists('active', $Where)) {
+            $Where['active'] = 0;
+        }
+        $Data = $this->tgroups->get($Where);
+        if (!is_null($Data)) {
+            return $Data;
+        } else {
+            return null;
+        }
+    }
+    
+    public function getAllGroupsWhere($Where) {
         $Data = $this->tgroups->get($Where);
         if (!is_null($Data)) {
             return $Data;
@@ -130,9 +141,110 @@ class MY_Controller extends CI_Controller {
         }
     }
 
-    public function getReport($GroupID) {
-        $List = $this->workgroups->get(['groupid' => $GroupID]);
+    public function getReportOfThisStudent($StudintID, $GroupID) {
+        $FinalReport = array();
+        $Report = array();
+        if ($GroupID != -1) {
+            $GroupWork = $this->workgroups->get(['groupid' => $GroupID]);
+        } else {
+            $GroupWork = $this->workgroups->get();
+        }
+        foreach ($GroupWork as $GW) {
+            if ($StudintID != -1) {
+                $StudentList = $this->existusers->get(['workinggroupid' => $GW->id, 'groupid' => $GW->groupid, 'userid' => $StudintID])[0];
+                if (!is_null($StudentList)) {
+                    $Wallet = $this->getAmount($StudentList->userid);
+                } else {
+                    $Wallet = 0;
+                }
+                if (!is_null($StudentList)) {
+                    $Report['groupid'] = $GW->groupid;
+                    $Report['Exist'] = true;
+                    $Report['LoginTime'] = $StudentList->timelogin;
+                    $Report['TimeEnd'] = $GW->timeend;
+                    $Report['Label'] = $GW->label;
+                    $Report['isDelayed'] = ($StudentList->delay == 1 ? true : false);
+                    $Report['Balance'] = $Wallet;
+                } else {
+                    $Report['groupid'] = $GW->groupid;
+                    $Report['Exist'] = false;
+                    $Report['LoginTime'] = $GW->timestart;
+                    $Report['TimeEnd'] = $GW->timeend;
+                    $Report['Label'] = $GW->label;
+                    $Report['isDelayed'] = true;
+                    $Report['Balance'] = $Wallet;
+                }
+                array_push($FinalReport, $Report);
+            } else {
+                $StudentList = $this->existusers->get(['workinggroupid' => $GW->id, 'groupid' => $GW->groupid]);
+                foreach ($StudentList as $SList) {
+                    $Wallet = $this->getAmount($SList->userid);
+                    $Report['groupid'] = $GW->groupid;
+                    $Report['Exist'] = true;
+                    $Report['LoginTime'] = $SList->timelogin;
+                    $Report['TimeEnd'] = $GW->timeend;
+                    $Report['Label'] = $GW->label;
+                    $Report['isDelayed'] = ($SList->delay == 1 ? true : false);
+                    $Report['Balance'] = $Wallet;
+                    array_push($FinalReport, $Report);
+                }
+            }
+        }
+        return $FinalReport;
+    }
+
+    public function getReport($GroupID, $TetcherID) {
+        if (($TetcherID == -1) && ($GroupID != -1)) {
+            $List = $this->workgroups->get(['groupid' => $GroupID]);
+        } elseif (($TetcherID != -1) && ($GroupID == -1)) {
+            $List = $this->workgroups->get(['tetcher' => $TetcherID]);
+        } elseif (($TetcherID != -1) && ($GroupID != -1)) {
+            $List = $this->workgroups->get(['tetcher' => $TetcherID, 'groupid' => $GroupID]);
+        } elseif (($TetcherID == -1) && ($GroupID == -1)) {
+            $List = $this->workgroups->get();
+        }
         if (!is_null($List)) {
+            for ($i = 0; $i <= count($List) - 1; $i++) {
+                $Voting = $this->tvoting->get(['workday' => $List[$i]->id]);
+                if (!is_null($Voting)) {
+                    foreach ($Voting as $mVote) {
+                        switch ($mVote->vot1) {
+                            case 1:
+                                $List[$i]->isithard += 0;
+                                break;
+                            case 2:
+                                $List[$i]->isithard += 0.2;
+                                break;
+                            case 3:
+                                $List[$i]->isithard += 0.4;
+                                break;
+                            case 4:
+                                $List[$i]->isithard += 0.8;
+                                break;
+                            case 5:
+                                $List[$i]->isithard += 1;
+                                break;
+                        }
+                        switch ($mVote->vot2) {
+                            case 1:
+                                $List[$i]->por += 0;
+                                break;
+                            case 2:
+                                $List[$i]->por += 0.2;
+                                break;
+                            case 3:
+                                $List[$i]->por += 0.4;
+                                break;
+                            case 4:
+                                $List[$i]->por += 0.8;
+                                break;
+                            case 5:
+                                $List[$i]->por += 1;
+                                break;
+                        }
+                    }
+                }
+            }
             return $List;
         } else {
             return null;
@@ -288,7 +400,7 @@ class MY_Controller extends CI_Controller {
 
     public function setIncrimentAmount($UserID, $Amount) {
         $AmountUser = $this->getAmount($UserID);
-        if ($AmountUser > 0) {
+        if ($Amount > 0) {
             $AmountUser += $Amount;
             $this->UpdateAmount($UserID, $AmountUser);
             return true;
@@ -341,6 +453,40 @@ class MY_Controller extends CI_Controller {
                 }
             }
         }
+    }
+
+    public function dateDifference($date1, $date2) {
+        $date1 = strtotime($date1);
+        $date2 = strtotime($date2);
+        $diff = abs($date1 - $date2);
+
+        $day = $diff / (60 * 60 * 24); // in day
+        $dayFix = floor($day);
+        $dayPen = $day - $dayFix;
+        if ($dayPen > 0) {
+            $hour = $dayPen * (24); // in hour (1 day = 24 hour)
+            $hourFix = floor($hour);
+            $hourPen = $hour - $hourFix;
+            if ($hourPen > 0) {
+                $min = $hourPen * (60); // in hour (1 hour = 60 min)
+                $minFix = floor($min);
+                $minPen = $min - $minFix;
+                if ($minPen > 0) {
+                    $sec = $minPen * (60); // in sec (1 min = 60 sec)
+                    $secFix = floor($sec);
+                }
+            }
+        }
+        $str = "";
+        if ($dayFix > 0)
+            $str .= $dayFix . " день ";
+        if ($hourFix > 0)
+            $str .= $hourFix . " час ";
+        if ($minFix > 0)
+            $str .= $minFix . " мин ";
+        if ($secFix > 0)
+            $str .= $secFix . " сек ";
+        return $str;
     }
 
 }

@@ -18,8 +18,6 @@ class Home extends MY_Controller {
         if (is_null($this->session->name)) {
             redirect(base_url());
         }
-        $this->session->keep_flashdata('sessionwork');
-        $this->session->keep_flashdata('sessionIDwork');
     }
 
     public function homepage($ID = null) {
@@ -27,6 +25,9 @@ class Home extends MY_Controller {
         $TetcherGroups = $this->getTetcherGroups($this->session->id);
         if (!is_null($TetcherGroups)) {
             $Data['Groplist'] = $TetcherGroups;
+            if (is_null($ID)) {
+                $ID = $TetcherGroups[0]->id;
+            }
         } else {
             $Data['Groplist'] = null;
         }
@@ -64,7 +65,6 @@ class Home extends MY_Controller {
         $this->load->view('include/header', $Data);
         $this->load->view('include/basic_header', $Data);
         $this->load->view('lessons', $Data);
-//        $this->load->view('lessonstudintable', $Data);
         $this->load->view('include/footer', $Data);
     }
 
@@ -91,7 +91,7 @@ class Home extends MY_Controller {
         $Amount = $Data['valueinput'];
         if (empty($Amount)) {
             $this->setMessage('error', "Баланс не обновлен");
-            $this->homepage($Data['groupid']);
+            $this->homepage($Data['groupids']);
         }
         if ($this->setDincrimentAmount($usedid, $Amount)) {
             $this->setIncrimentAmount($this->session->id, $Amount);
@@ -103,20 +103,22 @@ class Home extends MY_Controller {
     }
 
     public function checktimeforamount() {
-        $groupid = $this->session->flashdata('sessionIDwork');
-        if (!is_null($groupid)) {
+        $groupid = $this->session->sessionIDwork;
+        if ((!is_null($groupid)) || ($groupid != 0)) {
             $GData = $this->workgroups->get(['id' => $groupid, 'status' => 1])[0];
             $StartTime = new DateTime($GData->timestart);
             $TimeNow = new DateTime(date("Y/m/d H:i:s"));
+            $Dt = $this->dateDifference($GData->timestart, date("Y/m/d H:i:s"));
             $invter = $StartTime->diff($TimeNow);
             $Time = $invter->format('%h') . ':' . $invter->format('%i') . ':' . $invter->format('%s');
-            if ($invter->format('%i') == $this->getSetting()->longcharge) {
+            $TimeNeed = "0:" . $this->getSetting()->longcharge . ":0";
+            if ($Time == $TimeNeed) {
                 $AmountStart = $this->getSetting()->startsession;
                 $this->setIncrimentAmount($this->session->id, $AmountStart);
             } else {
                 $AmountStart = $this->getAmount($this->session->id);
             }
-            echo json_encode(['time' => $Time, 'amount' => $AmountStart]);
+            echo json_encode(['time' => $Dt, 'amount' => $AmountStart]);
         }
     }
 
@@ -136,9 +138,8 @@ class Home extends MY_Controller {
 
         $IDG = $this->workgroups->set($Data);
         $Data['name'] = $GroupName;
-        $this->session->set_flashdata('sessionIDwork', $IDG);
-        $this->session->set_flashdata('sessionwork', $Data);
-        $this->session->keep_flashdata('sessionwork');
+        $this->session->set_userdata('sessionIDwork', $IDG);
+        $this->session->set_userdata('sessionwork', $Data);
 
         echo $this->getAmount($this->session->id);
     }
@@ -153,11 +154,11 @@ class Home extends MY_Controller {
         ];
 
         $this->setResetAmount($this->session->id);
-        $GroupWorkID = $this->session->flashdata('sessionIDwork');
+        $GroupWorkID = $this->session->sessionIDwork;
         $this->UpdateFactorTableForGroup($GroupWorkID);
         $this->workgroups->update($Data, ['groupid' => $groupid, 'status' => 1, 'tetcher' => $this->session->id]);
-        $this->session->set_flashdata('sessionwork', 0);
-        $this->session->set_flashdata('sessionIDwork', 0);
+        $this->session->unset_userdata('sessionwork');
+        $this->session->unset_userdata('sessionIDwork');
         echo $this->getAmount($this->session->id);
     }
 
@@ -168,9 +169,10 @@ class Home extends MY_Controller {
         $Tetchers = $this->getStudints();
         $Data['tetcher'] = $Tetchers;
 
-        $DataPass = $this->session->flashdata('groupreport');
+        $DataPass = $this->session->groupreport;
         if (!is_null($DataPass)) {
             $Data['dReport'] = $DataPass;
+            $this->session->unset_userdata('groupreport');
         } else {
             $Data['dReport'] = null;
         }
@@ -182,16 +184,29 @@ class Home extends MY_Controller {
 
     public function getGroupReport() {
         $DataReportSearch = $this->input->post();
+        $StudentName = $DataReportSearch['studname'];
+        if ($StudentName != 'BCE') {
+            $StudID = $this->getStudintInfo(['name' => $StudentName])->id;
+        } else {
+            $StudID = -1;
+        }
         $GroupID = $DataReportSearch['groupid'];
-        $ListReport = $this->getReport($GroupID);
-        $this->session->set_flashdata('groupreport', $ListReport);
+        $ListReport = $this->getReportOfThisStudent($StudID, $GroupID);
+        $this->session->set_userdata('groupreport', $ListReport);
+        echo true;
     }
 
     public function getClassReport() {
         $DataReportSearch = $this->input->post();
         $GroupID = $DataReportSearch['groupid'];
-        $ListReport = $this->getReport($GroupID);
-        $this->session->set_flashdata('classreport', $ListReport);
+        $TetcherName = $DataReportSearch['tetchername'];
+        if ($TetcherName != 'BCE') {
+            $TetcherID = $this->getTetcherInfo(['name' => $TetcherName])->id;
+        } else {
+            $TetcherID = -1;
+        }
+        $ListReport = $this->getReport($GroupID,$TetcherID);
+        $this->session->set_userdata('classreport', $ListReport);
     }
 
     public function classes() {
@@ -200,7 +215,7 @@ class Home extends MY_Controller {
         $Data['Groplistgeneral'] = $Groups;
         $Tetchers = $this->getTetchers();
         $Data['tetcher'] = $Tetchers;
-        $DataPass = $this->session->flashdata('classreport');
+        $DataPass = $this->session->classreport;
         if (!is_null($DataPass)) {
             for ($il = 0; $il <= count($DataPass); $il++) {
                 $Vot = $this->getvoting(['workday' => $DataPass[$il]->id]);
@@ -217,39 +232,19 @@ class Home extends MY_Controller {
                     }
                 }
             }
-
-
-
             $Data['dReport'] = $DataPass;
         } else {
             $Data['dReport'] = null;
         }
-
+        $this->session->unset_userdata('classreport');
         $this->load->view('include/header', $Data);
         $this->load->view('include/basic_header', $Data);
         $this->load->view('classes', $Data);
         $this->load->view('include/footer', $Data);
     }
 
-    public function admincode() {
-        $Code = $this->input->post(NULL, TRUE);
-        $AdminData = $this->getAdmins(['cardid' => $Code['code'], 'password' => $Code['pass']])[0];
-        if (!is_null($AdminData)) {
-            $this->session->set_userdata('admin', true);
-        } else {
-            $this->setMessage('error', 'У вас нет доступа');
-            $this->session->set_userdata('admin', false);
-        }
-        redirect(base_url() . 'home');
-    }
-
-    public function adminexit() {
-        $this->session->set_userdata('admin', false);
-        redirect(base_url() . 'home');
-    }
-
     public function logout() {
-        $GroupWorkID = $this->session->flashdata('sessionIDwork');
+        $GroupWorkID = $this->session->sessionIDwork;
         if ($GroupWorkID != 0 || !is_null($GroupWorkID)) {
             $this->endlesson();
         }

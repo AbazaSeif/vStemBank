@@ -1,11 +1,24 @@
+<style>
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px;
+    }
+
+    .footer > .container {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+</style>
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
     <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
     <li><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
-    <?php if ($this->session->admin): ?>
-        <li><a href="<?php echo base_url() . 'tetchers'; ?>">Преподаватели</a></li>
+    <?php if ($this->session->isAdmin): ?>
+        <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
-        <li><a href="<?php echo base_url() . 'lstudints'; ?>">Студенты</a></li>
+        <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
         <li><a href="<?php echo base_url() . 'setting'; ?>">Настройки</a></li>
     <?php endif; ?>
 </ul>
@@ -24,3 +37,11 @@
         <?php endif; ?>
     </div>
 </div>
+<footer class="footer">
+    <div class="container">
+        <button onclick="closeallcomputer()" class="btn btn-lg btn-block btn-warning">Закрыть все компьютеры</button>
+    </div>
+</footer>
+<script>
+//    setInterval(location.reload(), 10000);
+</script>

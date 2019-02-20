@@ -6,6 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <meta charset="utf-8">
         <title><?php echo $welcome; ?></title>
         <link href="<?php echo base_url(); ?>assest/css/bootstrap.css" rel="stylesheet" type="text/css" />
+        <link href="<?php echo base_url(); ?>assest/css/style.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo base_url(); ?>assest/css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo base_url(); ?>assest/js/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
         <style type="text/css">

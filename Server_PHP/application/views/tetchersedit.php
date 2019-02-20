@@ -2,10 +2,10 @@
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
     <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
     <li><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
-    <?php if ($this->session->admin): ?>
-        <li class="active"><a href="<?php echo base_url() . 'tetchers'; ?>">Преподаватели</a></li>
+    <?php if ($this->session->isAdmin): ?>
+        <li class="active"><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
-        <li><a href="<?php echo base_url() . 'lstudints'; ?>">Студенты</a></li>
+        <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
         <li><a href="<?php echo base_url() . 'setting'; ?>">Настройки</a></li>
     <?php endif; ?>
 </ul>
@@ -63,7 +63,7 @@
                 <input type="hidden" name="userid" id="userid" value="<?php echo $uData->id; ?>">
                 <input type="hidden" name="image" id="imagepath" value="">
                 <button type="submit" class="btn btn-success btn-block">обновление</button>
-                <a href="<?php echo base_url() . 'tetchers'; ?>" class="btn btn-danger btn-block">отменить</a>
+                <a href="<?php echo base_url() . 'teachers'; ?>" class="btn btn-danger btn-block">отменить</a>
             </div>
             </form>
         </div>

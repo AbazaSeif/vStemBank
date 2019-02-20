@@ -72,4 +72,13 @@ class Settings extends MY_Controller {
         }
     }
 
+    public function allComputeraction() {
+        $PC = $this->GetOnlineComputers();
+        if (!is_null($PC)) {
+            foreach ($PC as $sPC) {
+                $this->TurnOfComputer($sPC->id);
+            }
+        }
+    }
+
 }

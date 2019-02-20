@@ -2,10 +2,10 @@
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
     <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
     <li><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
-    <?php if ($this->session->admin): ?>
-        <li class="active"><a href="<?php echo base_url() . 'tetchers'; ?>">Преподаватели</a></li>
+    <?php if ($this->session->isAdmin): ?>
+        <li class="active"><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
-        <li><a href="<?php echo base_url() . 'lstudints'; ?>">Студенты</a></li>
+        <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
         <li><a href="<?php echo base_url() . 'setting'; ?>">Настройки</a></li>
     <?php endif; ?>
 </ul>
@@ -25,23 +25,18 @@
                         </form>
                     </center>
                 </div>
-                <form action="<?php echo base_url() . 'datasave'; ?>" method="POST" enctype="multipart/form-data">      
+                <form id="tetcherform" action="<?php echo base_url() . 'datasave'; ?>" method="POST" enctype="multipart/form-data">      
                     <div class="col-sm-4">
                         <label for="name">ФИО</label>
-                        <input type="text" required name="name" class="form-control input-group">
+                        <input type="text" required name="name" id="nametet" class="form-control input-group">
                     </div>
-                    <!--                    <div class="col-sm-4">
-                                            <label for="cardid">Карта</label>
-                                            <a href="" onclick="scancard()" data-toggle="modal" data-target="#scaning" class="btn btn-xs btn-danger">Scan</a>
-                                            <input type="text" readonly required name="cardid" id="cardid" class="form-control input-group">
-                                        </div>-->
                     <div class="col-sm-4">
                         <label for="birthdate">Дата рождения</label>
-                        <input type="date" required name="birthdate" class="form-control input-group">
+                        <input type="date" name="birthdate" id="birthdaytet" class="form-control input-group">
                     </div>
                     <div class="col-sm-4">
                         <label for="grorepo">Группы:</label>
-                        <select size="3" required multiple="multiple" tabindex="1" class="form-control" name="grops[]" id="grops">
+                        <select size="3" multiple="multiple" tabindex="1" class="form-control" name="grops[]" id="grops">
                             <?php if (!is_null($GroupList)): ?>
                                 <?php foreach ($GroupList as $group): ?>
                                     <option value="<?php echo $group->id; ?>"><?php echo $group->groupname; ?></option>
@@ -51,27 +46,33 @@
                     </div>
                     <div class="col-sm-4">
                         <label for="phone">Телефон</label>
-                        <input required type="tel" name="phone" class="form-control input-group">
+                        <input type="tel" name="phone" id="phonetet" class="form-control input-group">
                     </div>
                     <div class="col-sm-4">
                         <label for="note">Комментарий</label>
-                        <input type="text" name="note" class="form-control input-group">
+                        <input type="text" name="note" id="notetet" class="form-control input-group">
                     </div>
                     <div style="padding-left: 9%;" class="col-sm-9">
                         <label for="note">пароль</label>
-                        <input required type="text" name="password" class="form-control input-group">
+                        <input required type="text" id="passtet" name="password" class="form-control input-group">
                     </div>
             </div>
             <br>
             <hr>
-            <div style="padding-left: 10%;padding-right: 10%;">
-                <input type="hidden" name="image" id="imagepath" value="">
-                <button type="submit" class="btn btn-success btn-block">Создать</button>
+            <input type="hidden" name="userid" id="userid">
+            <input type="hidden" name="image" id="imagepath" value="">
+            <div class="row" style="padding-left: 10%;padding-right: 10%;">
+                <div class="col-sm-6">
+                    <a id="cancelbtn" style="display: none;" class="btn btn-danger btn-block">Очистить все поля</a>
+                </div>
+                <div class="col-sm-6">
+                    <button type="submit" id="actionbtn" class="btn btn-success btn-block">Создать</button>    
+                </div>
             </div>
             </form>
         </div>
         <hr>
-        <table id="tablestud" class="table table-condensed">
+        <table class="table table-bordered display" id="dataTabletetchers" width="100%" cellspacing="0">
             <thead>
                 <tr>
                     <th>№</th>
@@ -85,9 +86,9 @@
             <tbody>
                 <?php if (!is_null($listTetchers)): $index = 1; ?>
                     <?php foreach ($listTetchers as $gUser): ?>
-                        <tr class="<?php echo ($gUser->isBlock ? 'bg-danger' : 'bg-success'); ?>">
+                        <tr id="<?php echo $gUser->id; ?>">
                             <td><?php echo $index++; ?></td>
-                            <td><?php echo $gUser->name; ?><?php echo ($gUser->isAdmin ? '(*)' : ''); ?></td>
+                            <td><?php echo ($gUser->isBlock ? '<strike>' . $gUser->name . ($gUser->isAdmin ? '(*)' : '') . '</strike>' : $gUser->name . ($gUser->isAdmin ? '(*)' : '')); ?> </td>
                             <td><?php echo $gUser->phonenumber; ?></td>
                             <td><?php echo $gUser->groups; ?></td>
                             <td><?php echo $gUser->note1; ?></td>
@@ -97,7 +98,6 @@
                         <?php else: ?>
                             <a onclick="admin(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-success">Администратор</a>
                         <?php endif; ?>
-                        <a onclick="edit(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-primary">редактировать</a>
                         <?php if ($gUser->isBlock): ?>
                             <a onclick="unblock(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-warning">открыть</a>
                         <?php else: ?>
@@ -112,7 +112,6 @@
                         <?php else: ?>
                             <a class="btn btn-xs btn-danger disabled">Удалить</a>
                         <?php endif; ?>
-                        <a onclick="addtogroup(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-info">Добавить в группу</a>
                     </center></td>
                     </tr>
                     <?php

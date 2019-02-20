@@ -2,10 +2,10 @@
     <li class="active"><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
     <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
     <li><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
-    <?php if ($this->session->admin): ?>
-        <li><a href="<?php echo base_url() . 'tetchers'; ?>">Преподаватели</a></li>
+    <?php if ($this->session->isAdmin): ?>
+        <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
-        <li><a href="<?php echo base_url() . 'lstudints'; ?>">Студенты</a></li>
+        <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
         <li><a href="<?php echo base_url() . 'setting'; ?>">Настройки</a></li>
     <?php endif; ?>
 </ul>
@@ -18,8 +18,11 @@
                 <div class="col-sm-5">
                     <div class="form-group">
                         <label for="sel1">Выбрать группу:</label>
-                        <?php if ($this->session->flashdata('sessionwork') == 0): ?>
-                            <?php if (!is_null($Groplist)): ?>
+                        <?php if ($this->session->sessionwork == 0): ?>
+                            <?php
+                            if (!is_null($Groplist)):
+                                rsort($Groplist);
+                                ?>
                                 <select onclick="selectgroup()" class="form-control" id="group">
                                     <?php if (!is_null($Groplist)): ?>
                                         <?php foreach ($Groplist as $group): ?>
@@ -32,9 +35,8 @@
                             <?php endif; ?>
                             <?php
                         else:
-                            $this->session->keep_flashdata('sessionwork');
                             ?>
-                            <input type="text" class="form-control input-group" value="<?php echo $this->session->flashdata('sessionwork')['name']; ?>" disabled>
+                            <input type="text" class="form-control input-group" value="<?php echo $this->session->sessionwork['name']; ?>" disabled>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -42,10 +44,10 @@
                     <div class="form-group">
                         <label for="sel1">Тема урока:</label>
                         <?php if ($cStart == true): ?>
-                            <?php if ($this->session->flashdata('sessionwork') == 0): ?>
+                            <?php if ($this->session->sessionwork == 0): ?>
                                 <input type="text" class="form-control input-group" id="labellesson" value="">
                             <?php else: ?>
-                                <input type="text" class="form-control input-group" disabled value="<?php echo $this->session->flashdata('sessionwork')['label']; ?>">
+                                <input type="text" class="form-control input-group" disabled value="<?php echo $this->session->sessionwork['label']; ?>">
                             <?php endif; ?>
                         <?php else: ?>
                             <input type="text" class="form-control input-group" disabled value="">
@@ -55,12 +57,11 @@
                 <br>
                 <div class="col-sm-2">
                     <?php if ($cStart == true): ?>
-                        <input type="hidden" id="groupidlesson" value="<?php echo (is_null($GSelect) ? $this->session->flashdata('sessionwork')['groupid'] : $GSelect); ?>">
-                        <?php if ($this->session->flashdata('sessionwork') == 0): ?>
+                        <input type="hidden" id="groupidlesson" value="<?php echo (is_null($GSelect) ? $this->session->sessionwork['groupid'] : $GSelect); ?>">
+                        <?php if ($this->session->sessionwork == 0): ?>
                             <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-success">Начните Урок</button>
                             <?php
                         else:
-                            $this->session->keep_flashdata('sessionwork');
                             ?>
                             <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-danger">заверщить урок</button>
                         <?php endif; ?>
@@ -71,7 +72,7 @@
             </div>
         </div>
         <hr>
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <table class="table table-bordered" id="dataTablelesson" width="100%" cellspacing="0">
             <thead>
                 <tr>
                     <th>№</th>
@@ -183,7 +184,7 @@
                             <?php endforeach; ?>
                         </div>
                     </center>
-                    <input type="hidden" name="groupid" id="groupid" value="<?php echo $GSelect; ?>">
+                    <input type="hidden" name="groupids" id="groupids" value="<?php echo $GSelect; ?>">
                     <input type="hidden" name="useridd" id="useridd" value="">
                 </div>
                 <div class="modal-footer">

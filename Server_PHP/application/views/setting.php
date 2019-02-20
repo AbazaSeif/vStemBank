@@ -2,10 +2,10 @@
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
     <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
     <li><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
-    <?php if ($this->session->admin): ?>
-        <li><a href="<?php echo base_url() . 'tetchers'; ?>">Преподаватели</a></li>
+    <?php if ($this->session->isAdmin): ?>
+        <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
-        <li><a href="<?php echo base_url() . 'lstudints'; ?>">Студенты</a></li>
+        <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
         <li class="active"><a href="<?php echo base_url() . 'setting'; ?>">Настройки</a></li>
     <?php endif; ?>
 </ul>
@@ -49,14 +49,6 @@
                 <div class="col-lg-3">
                     <label for="">Награда для студентов</label>
                     <input type="number" value="<?php echo $settings->rewardamount; ?>" name="rewardamount" class="form-control input-group">
-                </div>
-                <div class="col-lg-3">
-                    <label for="serialport">Последовательный порт для считывателя RFID</label>
-                    <input type="text" value="<?php echo $settings->serialport; ?>" name="serialport" class="form-control input-group">
-                </div>
-                <div class="col-lg-3">
-                    <label for="serialbaudrate">скорость передачи</label>
-                    <input type="text" value="<?php echo $settings->serialbaudrate; ?>" name="serialbaudrate" class="form-control input-group">
                 </div>
             </div>
             <br><hr>

@@ -2,10 +2,10 @@
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
     <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
     <li class="active"><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
-    <?php if ($this->session->admin): ?>
-        <li><a href="<?php echo base_url() . 'tetchers'; ?>">Преподаватели</a></li>
+    <?php if ($this->session->isAdmin): ?>
+        <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
-        <li><a href="<?php echo base_url() . 'lstudints'; ?>">Студенты</a></li>
+        <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
         <li><a href="<?php echo base_url() . 'setting'; ?>">Настройки</a></li>
     <?php endif; ?>
 </ul>
@@ -17,14 +17,9 @@
                 <div class="col-sm-5">
                     <div class="form-group">
                         <label for="tetchcomp">Преподаватель:</label>
-                        <select class="form-control" id="tetchcomp">
-                            <?php if (!is_null($tetcher)): ?>
-                                <?php foreach ($tetcher as $tet): ?>
-                                    <option value="<?php echo $tet->id; ?>" <?php echo ($this->session->id == $tet->id ? 'selected' : ''); ?>><?php echo $tet->name; ?></option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-
-                        </select>
+                        <div class="autocomplete">
+                            <input id="tetchcomp" class="form-control input-group" type="text" name="tetchcomp" placeholder="ФИО">
+                        </div>
                     </div>
                 </div>
                 <div class="col-sm-5">
@@ -35,18 +30,20 @@
                                 <?php foreach ($Groplistgeneral as $group): ?>
                                     <option value="<?php echo $group->id; ?>"><?php echo $group->groupname; ?></option>
                                 <?php endforeach; ?>
+                                <option value="" disabled="disabled">──────</option>
+                                <option value="-1" >ВСЕ</option>
                             <?php endif; ?>
                         </select>
                     </div>
                 </div>
                 <br>
                 <div class="col-sm-2">
-                    <button type="button" onclick="getClassReport()" class="btn btn-block btn-lg btn-success">СФОРМИРОВАТЬ</button>
+                    <button type="button" onclick="getClassReport()" id="getReportbtn" class="btn btn-block btn-lg btn-success disabled">СФОРМИРОВАТЬ</button>
                 </div>
             </div>
         </div>
         <hr>
-        <table class="table table-condensed">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
                 <tr>
                     <th>№</th>
@@ -78,9 +75,9 @@
                             <td><?php echo $rRepo->timeend; ?></td>
                             <td><?php echo $rRepo->label; ?></td>
                             <td><?php echo $GroupName; ?></td>
-                            <td><?php echo (is_null($rRepo->interest) ? 0 : $rRepo->interest); ?></td>
-                            <td><?php echo (is_null($rRepo->notinter) ? 0 : $rRepo->notinter); ?></td>
-                            <td><?php echo $rRepo->interest + $rRepo->notinter; ?></td>
+                            <td><?php echo (is_null($rRepo->isithard) ? 0 : $rRepo->isithard); ?></td>
+                            <td><?php echo (is_null($rRepo->por) ? 0 : $rRepo->por); ?></td>
+                            <td><?php echo $rRepo->isithard + $rRepo->por; ?></td>
                         </tr>
                         <?php
                         $Index++;
@@ -91,3 +88,12 @@
         </table>
     </div>
 </div>
+<script>
+    let dataname = [];
+<?php if (!is_null($tetcher)): ?>
+        dataname.push("BCE");
+    <?php foreach ($tetcher as $tet): ?>
+            dataname.push("<?php echo $tet->name; ?>");
+    <?php endforeach; ?>
+<?php endif; ?>
+</script>
