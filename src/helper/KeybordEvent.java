@@ -20,6 +20,10 @@ public class KeybordEvent implements NativeKeyListener {
 
     private WebStatusLabel status;
     private WebStatusLabel AccountNumber = null;
+    private static boolean key1 = false;
+    private static boolean key2 = false;
+    private static boolean key3 = false;
+    private static boolean key4 = false;
     private static JFrame Main = null;
 
     public KeybordEvent(WebStatusLabel lblstatus, WebStatusLabel lblaccountnumber) {
@@ -29,32 +33,38 @@ public class KeybordEvent implements NativeKeyListener {
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
-
-        if (e.getKeyCode() == NativeKeyEvent.VC_1) {
-            try {
-                GlobalScreen.unregisterNativeHook();
-                this.AccountNumber.setText("2105910749179");
-                this.status.setText("Emargancy Status");
-            } catch (NativeHookException ex) {
-            }
-        }
-        if (e.getKeyCode() == NativeKeyEvent.VC_2) {
-            try {
-                GlobalScreen.unregisterNativeHook();
-                this.AccountNumber.setText("31231232131221332312");
-                this.status.setText("Emargancy Status");
-            } catch (NativeHookException ex) {
-            }
-        }
-        if (e.isActionKey()) {
-            new helper().ShowNotification("Пожалуйста, введите свои карты на RFID Место");
-            KeybordEvent.Main.setFocusable(true);
-            KeybordEvent.Main.setAlwaysOnTop(true);
+        switch (e.getKeyCode()) {
+            case 44://Z
+                key1 = true;
+                break;
+            case 45://X
+                key2 = true;
+                break;
+            case 25://P
+                key3 = true;
+                break;
+            case 43://\
+                key4 = true;
+                break;
+            default:
+                key1 = key2 = key3 = key4 = false;
+                System.out.println("RESET");
+                break;
         }
     }
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent e) {
+        if (key1 == true) {
+            if (key2 == true) {
+                if (key3 == true) {
+                    if (key4 == true) {
+                        System.out.println("Key is DONE");
+                        System.exit(0);
+                    }
+                }
+            }
+        }
     }
 
     @Override

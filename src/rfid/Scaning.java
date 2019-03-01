@@ -52,69 +52,40 @@ public class Scaning implements Runnable {
     }
 
     public void ScanDevice(WebStatusLabel status) {
-//        do {
-//            SerialPort[] DeviceRFID = SerialPort.getCommPorts();
-//            if (DeviceRFID.length > 0) {
-//                String Name = DeviceRFID[0].getPortDescription();
-//                if (Name.equals("Arduino Leonardo")) {
-//                    this.status.setText(WAIT_YOUR_CARD);
-//                    if (!DeviceRFID[0].isOpen()) {
-//                        DeviceRFID[0].openPort(1500);
-//                    }
-//                    if (this.comPort != null) {
-//                        this.comPort.closePort();
-//                        this.comPort = null;
-//                    }
-//                    this.comPort = DeviceRFID[0];
-//                    this.comPort.setBreak();
-//                    this.comPort.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED | SerialPort.FLOW_CONTROL_CTS_ENABLED);
-//                    this.comPort.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 2000, 0);
-//                }
-//            } else {
-//                this.status.setText(DEV_NOT_CONNECTED);
-//                if (this.comPort != null) {
-//                    if (this.comPort.isOpen()) {
-//                        this.comPort.closePort();
-//                    }
-//                    this.comPort = null;
-//                }
-//            }
-//        } while (this.comPort == null);
+        do {
+            SerialPort[] DeviceRFID = SerialPort.getCommPorts();
+            if (DeviceRFID.length > 0) {
+                String Name = DeviceRFID[0].getPortDescription();
+                if (Name.equals("Arduino Leonardo")) {
+                    this.status.setText(WAIT_YOUR_CARD);
+                    if (!DeviceRFID[0].isOpen()) {
+                        DeviceRFID[0].openPort(1500);
+                    }
+                    if (this.comPort != null) {
+                        this.comPort.closePort();
+                        this.comPort = null;
+                    }
+                    this.comPort = DeviceRFID[0];
+                    this.comPort.setBreak();
+                    this.comPort.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED | SerialPort.FLOW_CONTROL_CTS_ENABLED);
+                    this.comPort.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 2000, 0);
+                }
+            } else {
+                this.status.setText(DEV_NOT_CONNECTED);
+                if (this.comPort != null) {
+                    if (this.comPort.isOpen()) {
+                        this.comPort.closePort();
+                    }
+                    this.comPort = null;
+                }
+            }
+        } while (this.comPort == null);
     }
 
     @Override
     public void run() {
         if (this.stop) {
             return;
-        } else {
-            if (this.comPort == null) {
-                SerialPort[] DeviceRFID = SerialPort.getCommPorts();
-                if (DeviceRFID.length > 0) {
-                    String Name = DeviceRFID[0].getPortDescription();
-                    if (Name.equals("Arduino Leonardo")) {
-                        this.status.setText(WAIT_YOUR_CARD);
-                        if (!DeviceRFID[0].isOpen()) {
-                            DeviceRFID[0].openPort(1500);
-                        }
-                        if (this.comPort != null) {
-                            this.comPort.closePort();
-                            this.comPort = null;
-                        }
-                        this.comPort = DeviceRFID[0];
-                        this.comPort.setBreak();
-                        this.comPort.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED | SerialPort.FLOW_CONTROL_CTS_ENABLED);
-                        this.comPort.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 2000, 0);
-                    }
-                } else {
-                    this.status.setText(DEV_NOT_CONNECTED);
-                    if (this.comPort != null) {
-                        if (this.comPort.isOpen()) {
-                            this.comPort.closePort();
-                        }
-                        this.comPort = null;
-                    }
-                }
-            }
         }
         this.workingThread = Thread.currentThread();
         while (!this.workingThread.isInterrupted()) {

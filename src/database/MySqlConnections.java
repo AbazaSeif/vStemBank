@@ -5,11 +5,14 @@
  */
 package database;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,20 +20,32 @@ import java.util.Map;
  */
 public class MySqlConnections {
 
-    private static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
-    private static final String CONNECTION_URL = "jdbc:mysql://127.0.0.1:3306/RFIT";
-    private static final String CONNECTION_USERNAME = "root";
-    private static final String CONNECTION_PASSWORD = "trinitron";
+    private static String DRIVER_CLASS = "com.mysql.jdbc.Driver";
+    private static String CONNECTION_URL = "";
+    private static String CONNECTION_USERNAME = "";
+    private static String CONNECTION_PASSWORD = "";
     private Connection MySQLDB = null;
     private Statement Stat = null;
 
     public void createConnection() throws SQLException {
         try {
+            CrunchifyGetPropertyValues properties = new CrunchifyGetPropertyValues();
+            Map<String, String> stuHashT = properties.getPropValues();
+            String host = stuHashT.get("host");
+            String Port = stuHashT.get("port");
+            String database = stuHashT.get("database");
+            String username = stuHashT.get("username");
+            String password = stuHashT.get("password");
+            CONNECTION_URL = "jdbc:mysql://" + host + ":" + Port + "/" + database;
+            CONNECTION_USERNAME = username;
+            CONNECTION_PASSWORD = password;
             Class.forName(DRIVER_CLASS);
 
         } catch (ClassNotFoundException e) {
             System.err.println("Driver class is not found, cause:"
                     + e.getMessage());
+        } catch (IOException ex) {
+            Logger.getLogger(MySqlConnections.class.getName()).log(Level.SEVERE, null, ex);
         }
         MySQLDB = DriverManager.getConnection(CONNECTION_URL + "?useUnicode=yes&characterEncoding=UTF-8", CONNECTION_USERNAME, CONNECTION_PASSWORD);
         Stat = MySQLDB.createStatement();
