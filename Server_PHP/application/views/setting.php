@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
-    <li><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
+    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
+        <li><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
@@ -49,6 +49,10 @@
                 <div class="col-lg-3">
                     <label for="">Награда для студентов</label>
                     <input type="number" value="<?php echo $settings->rewardamount; ?>" name="rewardamount" class="form-control input-group">
+                </div>
+                <div class="col-lg-3">
+                    <label for="">максимальное время урока</label>
+                    <input type="number" value="<?php echo $settings->endlesson; ?>" name="endlesson" class="form-control input-group">
                 </div>
             </div>
             <br><hr>

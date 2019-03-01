@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты</a></li>
-    <li><a href="<?php echo base_url() . 'classes'; ?>">класс</a></li>
+    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
+        <li><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li class="active"><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>

@@ -118,6 +118,11 @@ class Home extends MY_Controller {
             } else {
                 $AmountStart = $this->getAmount($this->session->id);
             }
+
+            $TimeForEnd = $this->getSetting()->endlesson . ":0:0";
+            if ($Time == $TimeForEnd) {
+                $this->endlesson();
+            }
             echo json_encode(['time' => $Dt, 'amount' => $AmountStart]);
         }
     }
@@ -205,7 +210,7 @@ class Home extends MY_Controller {
         } else {
             $TetcherID = -1;
         }
-        $ListReport = $this->getReport($GroupID,$TetcherID);
+        $ListReport = $this->getReport($GroupID, $TetcherID);
         $this->session->set_userdata('classreport', $ListReport);
     }
 

@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('#dataTable').DataTable();
     $('#dataTablelesson').DataTable();
     $('#dataTablegroups').DataTable();
     $('#dataTablestudent').DataTable();
@@ -151,7 +152,7 @@ $(document).ready(function () {
                         $("#grops option[value=" + value.id + "]").prop('selected', true);
                     });
                     $("#formstudent").attr("action", URL + "studupdate");
-                    $("#actionbtn").html("Создать");
+                    $("#actionbtn").html("обновление");
                     $("#cancelbtn").show();
                 }
             });

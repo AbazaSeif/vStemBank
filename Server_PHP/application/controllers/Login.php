@@ -11,10 +11,15 @@ class Login extends MY_Controller {
         $UsersList2 = $this->tusers->get(['isAdmin' => 1]);
         if (!is_null($UsersList1)) {
             $UsersList = array_merge($UsersList1, $UsersList2);
+            if (count($UsersList) <= 2) {
+                $Data['UList'] = $UsersList;
+            } else {
+                $Data['UList'] = array_diff_key($UsersList, array_unique($UsersList));
+            }
         } else {
             $UsersList = $UsersList2;
+            $Data['UList'] = $UsersList;
         }
-        $Data['UList'] = array_diff_key($UsersList, array_unique($UsersList));
         $this->load->view('include/header', $Data);
         $this->load->view('login', $Data);
         $this->load->view('include/footer', $Data);
@@ -43,9 +48,10 @@ class Login extends MY_Controller {
                 $DataCheck = $this->workgroups->get(['tetcher' => $this->session->id, 'status' => 1])[0];
                 if (!is_null($DataCheck)) {
                     $GroupName = $this->getGroupsWhere(['id' => $DataCheck->groupid])[0]->groupname;
-                    $this->session->set_flashdata('sessionIDwork', $DataCheck->id);
+                    $IDG = $DataCheck->id;
                     $DataCheck->name = $GroupName;
-                    $this->session->set_flashdata('sessionwork', get_object_vars($DataCheck));
+                    $this->session->set_userdata('sessionIDwork', $IDG);
+                    $this->session->set_userdata('sessionwork', get_object_vars($DataCheck));
                     redirect(site_url() . 'home/' . $DataCheck->groupid);
                 } else {
                     redirect(site_url() . 'home');
