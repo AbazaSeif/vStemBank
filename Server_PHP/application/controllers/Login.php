@@ -7,15 +7,15 @@ class Login extends MY_Controller {
     public function index() {
         $Data = $this->getBasicData();
         //Get Users
+        $UsersLogin = array();
         $UsersList1 = $this->tusers->get(['isTecher' => 1]);
         $UsersList2 = $this->tusers->get(['isAdmin' => 1]);
         if (!is_null($UsersList1)) {
             $UsersList = array_merge($UsersList1, $UsersList2);
-            if (count($UsersList) <= 2) {
-                $Data['UList'] = $UsersList;
-            } else {
-                $Data['UList'] = array_diff_key($UsersList, array_unique($UsersList));
-            }
+            $UsersList = array_map('json_encode', $UsersList);
+            $UsersList = array_unique($UsersList);
+            $UsersLogin = array_map('json_decode', $UsersList);
+            $Data['UList'] = $UsersLogin;
         } else {
             $UsersList = $UsersList2;
             $Data['UList'] = $UsersList;

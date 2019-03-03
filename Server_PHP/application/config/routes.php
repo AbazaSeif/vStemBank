@@ -87,6 +87,7 @@ $route['asblock'] = 'admin/makeblock';
 $route['asunblock'] = 'admin/makeunblock';
 $route['asdelete'] = 'admin/makedelete';
 $route['students'] = 'admin/studentlist';
+$route['recreatestudent'] = 'admin/recreatestudent';
 $route['createstuding'] = 'admin/createstuding';
 $route['studblock'] = 'admin/blockstudent';
 $route['studunblock'] = 'admin/unblockstudent';

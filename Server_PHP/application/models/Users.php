@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Users extends CI_Model {
 
-    private $TableName = 'Users';
+    private $TableName = 'users';
 
     public function __construct() {
         parent::__construct();
@@ -22,6 +22,17 @@ class Users extends CI_Model {
             $querey = $this->db->get_where($this->TableName, $where);
         }
 
+        if ($querey->result()) {
+            return $querey->result();
+        } else {
+            return null;
+        }
+    }
+
+    public function getAnd($where1, $where2) {
+        $this->db->where($where1[0], $where1[1]);
+        $this->db->where($where2[0], $where2[1]);
+        $querey = $this->db->get($this->TableName);
         if ($querey->result()) {
             return $querey->result();
         } else {

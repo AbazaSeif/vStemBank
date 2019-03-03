@@ -23,7 +23,7 @@
                             if (!is_null($Groplist)):
                                 rsort($Groplist);
                                 ?>
-                                <select onclick="selectgroup()" class="form-control" id="group">
+                                <select onchange="selectgroup()" class="form-control" id="group">
                                     <?php if (!is_null($Groplist)): ?>
                                         <?php foreach ($Groplist as $group): ?>
                                             <option value="<?php echo $group->id; ?>" <?php echo ($GSelect != null ? ($GSelect == $group->id ? 'selected' : '') : ''); ?>><?php echo $group->groupname; ?></option>

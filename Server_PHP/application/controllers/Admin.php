@@ -286,6 +286,29 @@ class Admin extends MY_Controller {
         $this->load->view('include/footer', $Data);
     }
 
+    public function recreatestudent() {
+        $StudentData = $this->session->holddata;
+        $chk = $this->tusers->get(['cardid' => $StudentData['cardid']])[0];
+        if (!is_null($chk)) {
+            $chk->cardid = '00000';
+        }
+        $this->tusers->update($chk, ['id' => $chk->id]);
+        $ID = $this->tusers->set($StudentData);
+        foreach ($StudentData['grops'] as $GroupID) {
+            $GroupData = [
+                'groupid' => $GroupID,
+                'userid' => $ID
+            ];
+            $this->tusersg->set($GroupData);
+        }
+        $ParName = dirname(APPPATH);
+        $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . $StudentData['cardid'];
+        mkdir($Path, 0777);
+
+        $this->setMessage('success', 'Данные сохранены');
+        redirect(base_url() . 'students');
+    }
+
     public function createstuding() {
         $StudData = $this->input->post(NULL, TRUE);
         if (count($StudData) > 0) {
@@ -318,7 +341,8 @@ class Admin extends MY_Controller {
 
                 $this->setMessage('success', 'Данные сохранены');
             } else {
-                $this->setMessage('error', 'Этот номер карты существует в базе данных');
+                $this->session->set_userdata('holddata', $TData);
+                $this->setMessage('error-msg', 'Этот номер карты существует в базе данных<br>Вы хотите продолжить и отключить студента <b>' . $chk->name . '</b>?');
             }
         }
         redirect(base_url() . 'students');
@@ -513,7 +537,7 @@ class Admin extends MY_Controller {
             if (!is_null($GData)) {
                 $Data->group = json_encode($GData);
             } else {
-                $Data->group = "";
+                $Data->group = json_encode(array());
             }
             echo json_encode($Data);
         } else {

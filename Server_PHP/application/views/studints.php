@@ -72,7 +72,7 @@
             <input type="hidden" name="image" id="imagepath" value="">
             <div class="row" style="padding-left: 10%;padding-right: 10%;">
                 <div class="col-sm-6">
-                    <a id="cancelbtn" style="display: none;" class="btn btn-danger btn-block">Очистить все поля</a>
+                    <a id="cancelbtns" style="display: none;" class="btn btn-danger btn-block">Очистить все поля</a>
                 </div>
                 <div class="col-sm-6">
                     <button type="submit" id="actionbtn" class="btn btn-success btn-block">Создать</button>    

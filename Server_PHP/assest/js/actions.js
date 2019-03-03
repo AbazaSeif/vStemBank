@@ -1,8 +1,41 @@
 $(document).ready(function () {
-    $('#dataTable').DataTable();
-    $('#dataTablelesson').DataTable();
-    $('#dataTablegroups').DataTable();
-    $('#dataTablestudent').DataTable();
+    var DataTable = {
+        "language": {
+            "decimal": "",
+            "emptyTable": "В таблице нет значений",
+            "info": "Отображено с _START_ по _END_ of _TOTAL_ строк",
+            "infoEmpty": "Отображено с 0 по 0 из 0 строк",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Отобразить _MENU_ строк",
+            "loadingRecords": "Загрузка...",
+            "processing": "Обработка...",
+            "search": "Поиск:",
+            "zeroRecords": "Не найдено подходящих значений",
+            "paginate": {
+                "first": "Первая",
+                "last": "Последняя",
+                "next": "Следующая",
+                "previous": "Предыдущая"
+            },
+            "aria": {
+                "sortAscending": ": Сортировать по возрастанию",
+                "sortDescending": ": Сортировать по убыванию"
+            }
+        },
+        aLengthMenu: [[25, 50, 75, -1], [25, 50, 75, "ВСЕ"]],
+        iDisplayLength: 50,
+        rowReorder: true,
+        fixedColumns: true,
+    };
+
+    $('#dataTable').DataTable(DataTable);
+    $('#dataTabletetchers').DataTable(DataTable);
+    $('#dataTablegroups').DataTable(DataTable);
+    $('#dataTablestudent').DataTable(DataTable);
+    $("#dataTablelesson").DataTable(DataTable);
+
     var dataTabletetchers = $('#dataTabletetchers').DataTable();
     var dataTablegroups = $('#dataTablegroups').DataTable();
     var dataTablestudent = $('#dataTablestudent').DataTable();
@@ -153,13 +186,13 @@ $(document).ready(function () {
                     });
                     $("#formstudent").attr("action", URL + "studupdate");
                     $("#actionbtn").html("обновление");
-                    $("#cancelbtn").show();
+                    $("#cancelbtns").show();
                 }
             });
         }
     });
 
-    $('#cancelbtn').click(function () {
+    $('#cancelbtns').click(function () {
         dataTablestudent.$('tr.bg-primary').removeClass('bg-primary');
         $("#name").val("");
         $("#cardid").val("");
@@ -173,7 +206,7 @@ $(document).ready(function () {
         $("#grops option:selected").prop("selected", false)
         $("#formstudent").attr("action", URL + "createstuding");
         $("#actionbtn").html("Создать");
-        $("#cancelbtn").hide();
+        $("#cancelbtns").hide();
     });
 
 
@@ -527,6 +560,18 @@ function autocomplete(inp, arr) {
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);
     });
+}
+
+function compliteadduser() {
+    var URL = $("#murl").val();
+    $("#resetactionstudent").html("Подождите пожалуйста");
+    $.post(URL + 'recreatestudent', null, function () {
+        location.replace(URL + 'students');
+    });
+}
+function canceladduser() {
+    var URL = $("#murl").val();
+    location.replace(URL + 'students');
 }
 setInterval(function () {
     checktime() // this will run after every 5 seconds

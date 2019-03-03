@@ -18,7 +18,7 @@
                     <div class="form-group">
                         <label for="tetchcomp">Преподаватель:</label>
                         <div class="autocomplete">
-                            <input id="tetchcomp" class="form-control input-group" type="text" name="tetchcomp" placeholder="ФИО">
+                            <input id="tetchcomp" class="form-control input-group" value="ВСЕ" type="text" name="tetchcomp" placeholder="ФИО">
                         </div>
                     </div>
                 </div>
@@ -27,18 +27,18 @@
                         <label for="grorepo">Группы:</label>
                         <select class="form-control" id="grorepo">
                             <?php if (!is_null($Groplistgeneral)): ?>
+                                <option value="-1" selected >ВСЕ</option>
+                                <option value="" disabled="disabled">──────</option>
                                 <?php foreach ($Groplistgeneral as $group): ?>
                                     <option value="<?php echo $group->id; ?>"><?php echo $group->groupname; ?></option>
                                 <?php endforeach; ?>
-                                <option value="" disabled="disabled">──────</option>
-                                <option value="-1" >ВСЕ</option>
                             <?php endif; ?>
                         </select>
                     </div>
                 </div>
                 <br>
                 <div class="col-sm-2">
-                    <button type="button" onclick="getClassReport()" id="getReportbtn" class="btn btn-block btn-lg btn-success disabled">СФОРМИРОВАТЬ</button>
+                    <button type="button" onclick="getClassReport()" id="getReportbtn" class="btn btn-block btn-lg btn-success">СФОРМИРОВАТЬ</button>
                 </div>
             </div>
         </div>
@@ -91,7 +91,7 @@
 <script>
     let dataname = [];
 <?php if (!is_null($tetcher)): ?>
-        dataname.push("BCE");
+        dataname.push("ВСЕ");
     <?php foreach ($tetcher as $tet): ?>
             dataname.push("<?php echo $tet->name; ?>");
     <?php endforeach; ?>

@@ -19,17 +19,29 @@ class Home extends MY_Controller {
             redirect(base_url());
         }
     }
-
     public function homepage($ID = null) {
         $Data = $this->getBasicData();
         $TetcherGroups = $this->getTetcherGroups($this->session->id);
         if (!is_null($TetcherGroups)) {
             $Data['Groplist'] = $TetcherGroups;
-            if (is_null($ID)) {
-                $ID = $TetcherGroups[0]->id;
-            }
         } else {
             $Data['Groplist'] = null;
+        }
+        if (is_null($ID)) {
+            $DataCheck = $this->workgroups->get(['tetcher' => $this->session->id, 'status' => 1])[0];
+            if (!is_null($DataCheck)) {
+                $GroupName = $this->getGroupsWhere(['id' => $DataCheck->groupid])[0]->groupname;
+                $IDG = $DataCheck->id;
+                $DataCheck->name = $GroupName;
+                $this->session->set_userdata('sessionIDwork', $IDG);
+                $this->session->set_userdata('sessionwork', get_object_vars($DataCheck));
+                $ID = $DataCheck->groupid;
+            } else {
+                $ID = $TetcherGroups[0]->id;
+                if (is_null($ID)) {
+                    $ID = null;
+                }
+            }
         }
         if (!is_null($ID)) {
             $DataGroupID = $this->tusersg->get(['groupid' => $ID]);
@@ -205,7 +217,7 @@ class Home extends MY_Controller {
         $DataReportSearch = $this->input->post();
         $GroupID = $DataReportSearch['groupid'];
         $TetcherName = $DataReportSearch['tetchername'];
-        if ($TetcherName != 'BCE') {
+        if ($TetcherName != 'ВСЕ') {
             $TetcherID = $this->getTetcherInfo(['name' => $TetcherName])->id;
         } else {
             $TetcherID = -1;
