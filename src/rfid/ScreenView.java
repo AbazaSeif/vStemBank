@@ -10,6 +10,7 @@ import database.MySqlConnections;
 import helper.KeybordEvent;
 import helper.helper;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import mslinks.ShellLink;
 
 /**
  *
@@ -55,6 +57,7 @@ public class ScreenView extends javax.swing.JFrame {
     public ScreenView() {
         try {
             initComponents();
+
             KeybordEvent keybordEvent = new KeybordEvent(lblstatus, lblaccountnumber);
             keybordEvent.KeyboardAction(this);
             Thread ThrDrvice = new Thread(new Scaning(lblstatus, lblaccountnumber));
@@ -105,7 +108,7 @@ public class ScreenView extends javax.swing.JFrame {
     private void Login() {
         Map<String, String> map = new HashMap<>();
         map.put("cardid", AccountNumber);
-        List<List> Result = MySQLDB.get("Users", map, java.util.Arrays.asList("name", "id", "isStudent", "isBlock", "factor"));
+        List<List> Result = MySQLDB.get("Users", map, java.util.Arrays.asList("name", "id", "isStudent", "isBlock", "factor", "Dirpath"));
         if (Result != null) {
             List<String> ResultData = Result.get(0);
             lblaccount.setVisible(true);
@@ -114,6 +117,7 @@ public class ScreenView extends javax.swing.JFrame {
             int isBlocked = Integer.parseInt(ResultData.get(3));
             UserFactor = Integer.parseInt(ResultData.get(4));
             int Student = Integer.parseInt(ResultData.get(2));
+            String PathUser = ResultData.get(5);
             if (Student == 1) {
                 if (isBlocked == 0) {
                     map.clear();
@@ -123,7 +127,9 @@ public class ScreenView extends javax.swing.JFrame {
                     map.put("online", "1");
                     mapWhere.put("cardid", AccountNumber);
                     MySQLDB.update("Users", map, mapWhere);
-
+                    if (PathUser != null) {
+                        CreateShortcut(PathUser, "Мои документы");
+                    }
                     map.clear();
                     map.put("userid", String.valueOf(UserID));
                     List<List> UserGroup = MySQLDB.get("usergroup", map, java.util.Arrays.asList("groupid"));
@@ -159,21 +165,20 @@ public class ScreenView extends javax.swing.JFrame {
                                     int CoinFornotDelay = Integer.parseInt(Setting.get(0).get(1).toString());
                                     int CoinForVoting = Integer.parseInt(Setting.get(0).get(2).toString());
 
-                                    if (diffMinutes < 0) {
-                                        lblstudystatus.setVisible(true);
-                                        lblstudystatus.setText("Урок еще не начался, пожалуйста, дождитесь начала урока");
-                                        AccountNumber = null;
-                                        if (Stud != null) {
-                                            Stud = null;
-                                        }
-                                        if (!isVisible()) {
-                                            setResizable(false);
-                                            setExtendedState(JFrame.MAXIMIZED_BOTH);
-                                            setVisible(true);
-                                        }
-                                        return;
-                                    }
-
+//                                    if (diffMinutes < 0) {
+//                                        lblstudystatus.setVisible(true);
+//                                        lblstudystatus.setText("Урок еще не начался, пожалуйста, дождитесь начала урока");
+//                                        AccountNumber = null;
+//                                        if (Stud != null) {
+//                                            Stud = null;
+//                                        }
+//                                        if (!isVisible()) {
+//                                            setResizable(false);
+//                                            setExtendedState(JFrame.MAXIMIZED_BOTH);
+//                                            setVisible(true);
+//                                        }
+//                                        return;
+//                                    }
                                     boolean isdelay = false;
                                     if (diffMinutes > Delay) {
                                         isdelay = true;
@@ -218,16 +223,18 @@ public class ScreenView extends javax.swing.JFrame {
 
                                 } catch (ParseException ex) {
                                 }
+                            } else {
+                                if ((Stud == null) && (AccountNumber != null)) {
+                                    Stud = new UserPopup(AccountNumber, UserFactor, LessonLabel);
+                                    Stud.setVisible(true);
+                                    setVisible(false);
+                                } else if ((Stud != null) && (AccountNumber == null)) {
+                                    Stud.setVisible(false);
+                                    Stud = null;
+                                    RemoveDisk("Мои документы");
+                                    UserID = 0;
+                                }
                             }
-//                            if ((Stud == null) && (AccountNumber != null)) {
-//                                Stud = new UserPopup(AccountNumber, UserFactor, LessonLabel);
-//                                Stud.setVisible(true);
-//                                setVisible(false);
-//                            } else if ((Stud != null) && (AccountNumber == null)) {
-//                                Stud.setVisible(false);
-//                                Stud = null;
-//                                UserID = 0;
-//                            }
                         }
                     }
 
@@ -250,6 +257,7 @@ public class ScreenView extends javax.swing.JFrame {
             lblstudystatus.setText("");
             AccountNumber = null;
             Stud = null;
+            RemoveDisk("Мои документы");
             if (!isVisible()) {
                 setResizable(false);
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -274,7 +282,7 @@ public class ScreenView extends javax.swing.JFrame {
         lblstudystatus = new com.alee.laf.label.WebLabel();
         background = new com.alee.extended.image.WebImage();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ScreenLock");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setFocusTraversalPolicyProvider(true);
@@ -360,6 +368,7 @@ public class ScreenView extends javax.swing.JFrame {
                 if (Stud != null) {
                     Stud.setVisible(false);
                     Stud = null;
+                    RemoveDisk("Мои документы");
                 }
                 if (!isVisible()) {
                     setResizable(false);
@@ -422,21 +431,35 @@ public class ScreenView extends javax.swing.JFrame {
         return null;
     }
 
-//    private void GetDir(String path) {
-//        SmbFile file = null;
-//        byte[] buffer = new byte[1024];
-//        try {
-//            String url = "smb://192.168.1.100/" + path + "/TEST.txt";
-//            NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(null, "", "");
-//            file = new SmbFile(url, auth);
-//            try (SmbFileInputStream in = new SmbFileInputStream(file)) {
-//                int bytesRead = 0;
-//                do {
-//                    bytesRead = in.read(buffer) // here you have "bytesRead" in buffer array
-//                } while (bytesRead > 0);
-//            }
-//        } catch (Exception e) {
-//            
-//        }
-//    }
+    private void CreateShortcut(String path, String username) {
+        try {
+            String Desktop = "C:\\Users\\student\\desktop\\";
+            String Command = "net use w: \\\\stemteacher\\htdocs\\Users\\" + path + "  /persistent:no";
+            Runtime.getRuntime().exec(Command);
+            ShellLink sl = ShellLink.createLink(username)
+                    .setName(username)
+                    .setTarget("w:\\")
+                    .setWorkingDir(Desktop)
+                    .setIconLocation("%SystemRoot%\\system32\\SHELL32.dll");
+            sl.getHeader().setIconIndex(128);
+            sl.getConsoleData()
+                    .setFont(mslinks.extra.ConsoleData.Font.Consolas)
+                    .setFontSize(24)
+                    .setTextColor(5);
+            sl.saveTo(Desktop + username + ".lnk");
+        } catch (IOException ex) {
+        }
+    }
+
+    private void RemoveDisk(String dirname) {
+        try {
+            File file = new File("C:\\Users\\student\\desktop\\" + dirname + ".lnk");
+            file.delete();
+            
+            String Command = "net use w:  /delete";
+            Runtime.getRuntime().exec(Command);
+            
+        } catch (IOException ex) {
+        }
+    }
 }

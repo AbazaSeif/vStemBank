@@ -51,7 +51,8 @@ public class MySqlConnections {
         Stat = MySQLDB.createStatement();
     }
 
-    public ResultSet getAll(String TableName) {
+    public ResultSet getAll(String TableNames) {
+        String TableName = TableNames.toLowerCase();
         try {
             ResultSet rs = null;
             if (MySQLDB == null) {
@@ -68,7 +69,8 @@ public class MySqlConnections {
         return null;
     }
 
-    public List<List> get(String TableName, Map<String, String> Where, List<String> sql) {
+    public List<List> get(String TableNames, Map<String, String> Where, List<String> sql) {
+        String TableName = TableNames.toLowerCase();
         try {
             Map<String, String> ColType = GetTypes(TableName, Where);
             ResultSet rs = null;
@@ -185,7 +187,8 @@ public class MySqlConnections {
         }
     }
 
-    public boolean set(String Table, Map<String, String> Data) {
+    public boolean set(String Tables, Map<String, String> Data) {
+        String Table = Tables.toLowerCase();
         try {
             List<List> Result = get(Table, Data, java.util.Arrays.asList("name", "id", "cardid"));
             if (Result != null) {
@@ -246,7 +249,8 @@ public class MySqlConnections {
         }
     }
 
-    public boolean update(String Table, Map<String, String> UpdateData, Map<String, String> Where) {
+    public boolean update(String Tables, Map<String, String> UpdateData, Map<String, String> Where) {
+        String Table = Tables.toLowerCase();
         try {
             Map<String, String> ColType = GetTypes(Table, UpdateData);
             Map<String, String> ColTypeWhere = GetTypes(Table, Where);
@@ -335,7 +339,8 @@ public class MySqlConnections {
         }
     }
 
-    public boolean Delete(String Table, Map<String, String> Where) {
+    public boolean Delete(String Tables, Map<String, String> Where) {
+        String Table = Tables.toLowerCase();
         try {
             Map<String, String> ColType = GetTypes(Table, Where);
             ResultSet rs = null;

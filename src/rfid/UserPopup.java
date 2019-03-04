@@ -39,6 +39,8 @@ public class UserPopup extends javax.swing.JFrame {
         this.AccountSession = AccountNumber;
         this.LabelSession = StadyLabel;
         this.Factor = factor;
+        WPU = new WindowPopUp(this.AccountSession, this.Factor, this.LabelSession);
+        WPU.setVisible(false);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         //If translucent windows aren't supported, exit.

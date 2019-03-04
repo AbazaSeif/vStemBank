@@ -2,6 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/alienware/JavaProject/RFID/src/rfid/WindowPopUp.java</file>
+            <file>file:/home/alienware/JavaProject/RFID/src/config.properties</file>
+            <file>file:/home/alienware/JavaProject/RFID/src/rfid/UserPopup.java</file>
+            <file>file:/home/alienware/JavaProject/RFID/src/rfid/voting.java</file>
+        </group>
     </open-files>
 </project-private>
