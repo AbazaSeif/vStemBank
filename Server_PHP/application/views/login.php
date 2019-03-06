@@ -30,7 +30,7 @@
             </div>
             <div class="col-sm-9">
                 <br>
-                <button type="submit" class="btn btn-block btn-success" value="Submit">войти</button>
+                <button type="submit" class="btn btn-block btn-success" value="Submit">Войти</button>
                 <br>
             </div>
         </form>

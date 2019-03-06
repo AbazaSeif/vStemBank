@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
+    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчеты по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
-        <li><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
+        <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li class="active"><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
@@ -20,7 +20,7 @@
                         <form id="form1" runat="server">
                             <img src="assest/user.png" id="blah" width="120" height="140">
                             <label class="btn btn-default btn-block btn-file">
-                                Browse <input id="imgInp" name="userfile" type="file" style="display: none;">
+                                Добавить фото <input id="imgInp" name="userfile" type="file" style="display: none;">
                             </label>
                         </form>
                     </center>
@@ -93,7 +93,7 @@
                     <th>Комментарий</th>
                     <th><center>Зачислить</center></th>
             <th><center>Списать</center></th>
-            <th><center>действие</center></th>
+            <th><center>Действие</center></th>
             </tr>
             </thead>
             <tbody>
@@ -114,10 +114,11 @@
                     <td><center><a class="btn btn-xs btn-danger" onclick="sshowAmountDinc('<?php echo $gUser->id; ?>', '<?php echo $gUser->name; ?>')"  style="width: 100px">-</a></center></td>
                     <td><center>
                         <?php if ($gUser->isBlock): ?>
-                            <a onclick="sunblock(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-warning">открыть</a>
+                            <a onclick="sunblock(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-warning">Разблокировать</a>
                         <?php else: ?>
                             <a onclick="sblock(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-warning">Заблокирован</a>
                         <?php endif; ?>
+                        <a onclick="sopendir(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-info">Рабочая папка</a>
                         <a onclick="sdelet(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-danger">Удалить</a>
                     </center></td>
                     </tr>
@@ -138,7 +139,7 @@
                 <h4 class="modal-title">Сканирование карты ....</h4>
             </div>
             <div class="modal-body">
-                <p>Пожалуйста, положите карту на ридере</p>
+                <p>Приложите карту к считывателю</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -170,7 +171,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type='hidden' name="userlistid" id="userlistid" value="">
-                    <button type="submit" class="btn btn-success">добавлять</button>
+                    <button type="submit" class="btn btn-success">Добавить</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
                 </div>
             </form>
@@ -214,7 +215,7 @@
                             <button type="submit" class="btn btn-success btn-block">Зачислить</button>
                         </div>
                         <div class="col-lg-2">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">отменить</button>        
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>        
                         </div>
                     </div>
                 </div>
@@ -260,7 +261,7 @@
                             <button type="submit" class="btn btn-danger btn-block">Списать</button>
                         </div>
                         <div class="col-lg-2">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">отменить</button>        
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>        
                         </div>
                     </div>
                 </div>

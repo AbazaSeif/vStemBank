@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
+    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчеты по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
-        <li class="active"><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
+        <li class="active"><a href="<?php echo base_url() . 'report'; ?>">Отчеты по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
@@ -89,7 +89,7 @@
 <script>
     let dataname = [];
 <?php if (!is_null($tetcher)): ?>
-        dataname.push("BCE");
+        dataname.push("ВСЕ");
     <?php foreach ($tetcher as $tet): ?>
             dataname.push("<?php echo $tet->name; ?>");
     <?php endforeach; ?>

@@ -13,9 +13,9 @@
 </style>
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
+    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчеты по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
-        <li><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
+        <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
@@ -30,7 +30,7 @@
                     <center>
                         <img src="assest/computer.png" width="100" height="100"><br>
                         <label class="label label-success"><?php echo $pc->name; ?></label><br>
-                        <button onclick="poweroff(<?php echo $pc->id; ?>)" class="btn btn-xs btn-danger btn-block">Power Off</button>
+                        <button onclick="poweroff(<?php echo $pc->id; ?>)" class="btn btn-xs btn-danger btn-block">Выключить</button>
                     </center>
                 </div>
             <?php endforeach; ?>
@@ -39,7 +39,7 @@
 </div>
 <footer class="footer">
     <div class="container">
-        <button onclick="closeallcomputer()" class="btn btn-lg btn-block btn-warning">Закрыть все компьютеры</button>
+        <button onclick="closeallcomputer()" class="btn btn-lg btn-block btn-warning">Выключить все компьютеры</button>
     </div>
 </footer>
 <script>

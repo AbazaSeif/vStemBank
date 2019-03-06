@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
+    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчеты по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
-        <li><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
+        <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li class="active"><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
@@ -51,7 +51,7 @@
                     <th>Название предмета</th>
                     <th>Описание</th>
                     <th>Завершен</th>
-                    <th><center>действие</center></th>
+                    <th><center>Действие</center></th>
             </tr>
             </thead>
             <tbody>
@@ -66,7 +66,7 @@
                             <td><?php echo ($gUser->active == 1 ? 'Да' : 'Нет'); ?></td>
                             <td><center>
                         <?php if ($gUser->active == 0): ?>
-                            <a onclick="gisdone(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-success">завершен</a>
+                            <a onclick="gisdone(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-success">Завершен</a>
                         <?php else: ?>
                             <a onclick="gnotdone(<?php echo $gUser->id; ?>)" class="btn btn-xs btn-success">Не завершен</a>
                         <?php endif; ?>
@@ -90,7 +90,7 @@
                 <h4 class="modal-title">Сканирование карты ....</h4>
             </div>
             <div class="modal-body">
-                <p>Пожалуйста, положите карту на ридере</p>
+                <p>Пожалуйста, положите карту на считыватель</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

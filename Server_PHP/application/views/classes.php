@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs">
     <li><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li class="active"><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
+    <li class="active"><a href="<?php echo base_url() . 'classes'; ?>">Отчеты по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
-        <li><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
+        <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
@@ -18,7 +18,7 @@
                     <div class="form-group">
                         <label for="tetchcomp">Преподаватель:</label>
                         <div class="autocomplete">
-                            <input id="tetchcomp" class="form-control input-group" value="ВСЕ" type="text" name="tetchcomp" placeholder="ФИО">
+                            <input id="tetchcomp" class="form-control input-group" type="text" name="tetchcomp" value="ВСЕ" placeholder="ФИО">
                         </div>
                     </div>
                 </div>
@@ -69,15 +69,15 @@
                             }
                         }
                         ?>
-                        <tr class="<?php echo ($rRepo->status == 0 ? 'bg-success' : 'bg-danger'); ?>">
+                       <tr class="<?php echo ($rRepo->status == 0 ? 'bg-success' : 'bg-danger'); ?>">
                             <td><?php echo $Index; ?></td>
                             <td><?php echo $rRepo->timestart; ?></td>
                             <td><?php echo $rRepo->timeend; ?></td>
                             <td><?php echo $rRepo->label; ?></td>
                             <td><?php echo $GroupName; ?></td>
-                            <td><?php echo (is_null($rRepo->isithard) ? 0 : $rRepo->isithard); ?></td>
-                            <td><?php echo (is_null($rRepo->por) ? 0 : $rRepo->por); ?></td>
-                            <td><?php echo $rRepo->isithard + $rRepo->por; ?></td>
+                            <td><?php echo (is_null($rRepo->interest) ? 0 : $rRepo->interest); ?></td>
+                            <td><?php echo (is_null($rRepo->notinter) ? 0 : $rRepo->notinter); ?></td>
+                            <td><?php echo $rRepo->interest + $rRepo->notinter; ?></td>
                         </tr>
                         <?php
                         $Index++;

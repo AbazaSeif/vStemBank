@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs">
     <li class="active"><a href="<?php echo base_url() . 'home'; ?>">Урок</a></li>
-    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчете по классам</a></li>
+    <li><a href="<?php echo base_url() . 'classes'; ?>">Отчеты по классам</a></li>
     <?php if ($this->session->isAdmin): ?>
-        <li><a href="<?php echo base_url() . 'report'; ?>">Отчете по студентам</a></li>
+        <li><a href="<?php echo base_url() . 'report'; ?>">Отчеты по студентам</a></li>
         <li><a href="<?php echo base_url() . 'teachers'; ?>">Преподаватели</a></li>
         <li><a href="<?php echo base_url() . 'ngroups'; ?>">Группы</a></li>
         <li><a href="<?php echo base_url() . 'students'; ?>">Студенты</a></li>
@@ -59,14 +59,14 @@
                     <?php if ($cStart == true): ?>
                         <input type="hidden" id="groupidlesson" value="<?php echo (is_null($GSelect) ? $this->session->sessionwork['groupid'] : $GSelect); ?>">
                         <?php if ($this->session->sessionwork == 0): ?>
-                            <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-success">Начните Урок</button>
+                            <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-success">Начать урок</button>
                             <?php
                         else:
                             ?>
-                            <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-danger">заверщить урок</button>
+                            <button type="button" id="btnstarttot" onclick="startlesson()" class="btn btn-block btn-lg btn-danger">Завершить урок</button>
                         <?php endif; ?>
                     <?php else: ?>
-                        <button type="button" class="btn btn-block btn-lg btn-success disabled">Начните Урок</button>
+                        <button type="button" class="btn btn-block btn-lg btn-success disabled">Начать урок</button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                             <button type="submit" class="btn btn-success btn-block">Зачислить</button>
                         </div>
                         <div class="col-lg-2">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">отменить</button>        
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>        
                         </div>
                     </div>
                 </div>
@@ -193,7 +193,7 @@
                             <button type="submit" class="btn btn-danger btn-block">Списать</button>
                         </div>
                         <div class="col-lg-2">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">отменить</button>        
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>        
                         </div>
                     </div>
                 </div>

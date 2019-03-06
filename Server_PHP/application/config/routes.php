@@ -92,6 +92,7 @@ $route['createstuding'] = 'admin/createstuding';
 $route['studblock'] = 'admin/blockstudent';
 $route['studunblock'] = 'admin/unblockstudent';
 $route['studdelete'] = 'admin/deletestudent';
+$route['opendirectory'] = 'admin/opendirectory';
 $route['studaddmoney'] = 'admin/StudentIncrimentAmount';
 $route['studgetmoney'] = 'admin/StudentDincrimentAmount';
 $route['studaddtogroup'] = 'admin/studentaddtogroup';

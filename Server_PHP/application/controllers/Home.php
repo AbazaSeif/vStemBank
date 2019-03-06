@@ -19,6 +19,7 @@ class Home extends MY_Controller {
             redirect(base_url());
         }
     }
+
     public function homepage($ID = null) {
         $Data = $this->getBasicData();
         $TetcherGroups = $this->getTetcherGroups($this->session->id);
@@ -132,10 +133,14 @@ class Home extends MY_Controller {
             }
 
             $TimeForEnd = $this->getSetting()->endlesson . ":0:0";
-            if ($Time == $TimeForEnd) {
+//            $TimeForEnd = "0:" . $this->getSetting()->endlesson . ":0";
+            if (strcmp($Time, $TimeForEnd) > 0) {
+                $groupid = $this->session->sessionIDwork;
                 $this->endlesson();
+                redirect(base_url() . 'home/' . $groupid);
+            } else {
+                echo json_encode(['time' => $Dt, 'amount' => $AmountStart, 'end' => 1]);
             }
-            echo json_encode(['time' => $Dt, 'amount' => $AmountStart]);
         }
     }
 
@@ -238,14 +243,8 @@ class Home extends MY_Controller {
                 $Vot = $this->getvoting(['workday' => $DataPass[$il]->id]);
                 if (!is_null($Vot)) {
                     foreach ($Vot as $v) {
-                        switch ($v->vot) {
-                            case 1:
-                                $DataPass[$il]->interest += 1;
-                                break;
-                            case 2:
-                                $DataPass[$il]->notinter += 1;
-                                break;
-                        }
+                        $DataPass[$il]->interest += $v->vot1;
+                        $DataPass[$il]->notinter += $v->vot2;
                     }
                 }
             }

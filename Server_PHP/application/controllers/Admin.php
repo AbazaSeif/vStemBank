@@ -63,7 +63,7 @@ class Admin extends MY_Controller {
             $Loop++;
         }
         if (is_null($Data)) {
-            echo 'Не найденная карта';
+            echo 'Карта не обнаружена';
         } else {
             echo $Data;
         }
@@ -125,7 +125,7 @@ class Admin extends MY_Controller {
                 $this->ttetgroups->set($GroupData);
             }
         }
-        $this->setMessage('success', 'обновленный');
+        $this->setMessage('success', 'Успешно');
         redirect(base_url() . 'teachers');
     }
 
@@ -136,9 +136,9 @@ class Admin extends MY_Controller {
                 'isAdmin' => 1
             ];
             $this->tusers->update($Update, ['id' => $UID]);
-            $this->setMessage('success', 'обновленный');
+            $this->setMessage('success', 'Успешно');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -149,12 +149,12 @@ class Admin extends MY_Controller {
                 'isAdmin' => 0
             ];
             $this->tusers->update($Update, ['id' => $UID]);
-            $this->setMessage('success', 'обновленный');
+            $this->setMessage('success', 'Успешно');
             if ($UID == $this->session->id) {
                 redirect(base_url() . 'adminout');
             }
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -165,9 +165,9 @@ class Admin extends MY_Controller {
                 'isBlock' => 1
             ];
             $this->tusers->update($Update, ['id' => $UID]);
-            $this->setMessage('success', 'обновленный');
+            $this->setMessage('success', 'Успешно');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -178,9 +178,9 @@ class Admin extends MY_Controller {
                 'isBlock' => 0
             ];
             $this->tusers->update($Update, ['id' => $UID]);
-            $this->setMessage('success', 'обновленный');
+            $this->setMessage('success', 'Успешно');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -190,7 +190,7 @@ class Admin extends MY_Controller {
             $this->tusers->delete(['id' => $UID]);
             $this->setMessage('success', 'Пользователь удален');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -210,9 +210,9 @@ class Admin extends MY_Controller {
                 'active' => 1
             ];
             $this->tgroups->update($Update, ['id' => $UID]);
-            $this->setMessage('success', 'обновленный');
+            $this->setMessage('success', 'Успешно');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -223,9 +223,9 @@ class Admin extends MY_Controller {
                 'active' => 0
             ];
             $this->tgroups->update($Update, ['id' => $UID]);
-            $this->setMessage('success', 'обновленный');
+            $this->setMessage('success', 'Успешно');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -237,7 +237,7 @@ class Admin extends MY_Controller {
                 $this->setMessage('success', 'Пользователь удален');
             }
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
     }
 
@@ -253,7 +253,7 @@ class Admin extends MY_Controller {
             $this->tgroups->set($GroupData);
             $this->setMessage('success', 'Новая группа создана');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Ошибка');
         }
         redirect(base_url() . 'ngroups');
     }
@@ -293,27 +293,49 @@ class Admin extends MY_Controller {
             $chk->cardid = '00000';
         }
         $this->tusers->update($chk, ['id' => $chk->id]);
-        $ID = $this->tusers->set($StudentData);
-        foreach ($StudentData['grops'] as $GroupID) {
-            $GroupData = [
-                'groupid' => $GroupID,
-                'userid' => $ID
+        if (array_key_exists('userid', $StudentData)) {
+            $TData = [
+                'image' => $StudentData['image'],
+                'name' => $StudentData['name'],
+                'cardid' => $StudentData['cardid'],
+                'parentname' => $StudentData['mothername'],
+                'parentphone' => $StudentData['motherphone'],
+                'phonenumber' => $StudentData['phone'],
+                'birthdate' => $StudentData['birthdate'],
+                'notes1' => $StudentData['note']
             ];
-            $this->tusersg->set($GroupData);
-        }
-        $ParName = dirname(APPPATH);
-        $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . $StudentData['cardid'];
-        mkdir($Path, 0777);
+            $this->tusers->update($TData, ['id' => $StudentData['userid']]);
+            $this->tusersg->delete(['userid' => $StudentData['userid']]);
+            foreach ($TData['grops'] as $GroupID) {
+                $this->tusersg->set(['userid' => $StudentData['userid'], 'groupid' => $GroupID]);
+            }
 
-        $this->setMessage('success', 'Данные сохранены');
+            $this->setMessage('success', 'Данные обновлены');
+        } else {
+            $ID = $this->tusers->set($StudentData);
+            $ParName = dirname(APPPATH);
+            $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . md5($ID);
+            mkdir($Path, 0777);
+            $this->tusers->update(['Dirpath' => md5($ID)], ['id' => $ID]);
+            foreach ($StudentData['grops'] as $GroupID) {
+                $GroupData = [
+                    'groupid' => $GroupID,
+                    'userid' => $ID
+                ];
+                $this->tusersg->set($GroupData);
+            }
+
+
+            $this->setMessage('success', 'Данные сохранены');
+        }
+
         redirect(base_url() . 'students');
     }
 
     public function createstuding() {
         $StudData = $this->input->post(NULL, TRUE);
         if (count($StudData) > 0) {
-            $ParName = dirname(APPPATH);
-            $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . $StudData['cardid'];
+
             $TData = [
                 'image' => $StudData['image'],
                 'name' => $StudData['name'],
@@ -323,13 +345,16 @@ class Admin extends MY_Controller {
                 'phonenumber' => $StudData['phone'],
                 'birthdate' => $StudData['birthdate'],
                 'notes1' => $StudData['note'],
-                'Dirpath' => $Path,
+                'Dirpath' => '',
                 'isStudent' => 1,
                 'factor' => 0,
             ];
             $chk = $this->tusers->get(['cardid' => $TData['cardid']])[0];
             if (is_null($chk)) {
                 $ID = $this->tusers->set($TData);
+                $ParName = dirname(APPPATH);
+                $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . md5($ID);
+                $this->tusers->update(['Dirpath' => md5($ID)], ['id' => $ID]);
                 foreach ($StudData['grops'] as $GroupID) {
                     $GroupData = [
                         'groupid' => $GroupID,
@@ -361,7 +386,7 @@ class Admin extends MY_Controller {
                 $this->tusersg->set($GroupData);
             }
         }
-        $this->setMessage('success', 'обновленный');
+        $this->setMessage('success', 'Успешно');
         redirect(base_url() . 'students');
     }
 
@@ -372,9 +397,9 @@ class Admin extends MY_Controller {
                 'isBlock' => 1
             ];
             $this->tusers->update($Update, ['id' => $UID]);
-            $this->setMessage('success', 'обновленный');
+            $this->setMessage('success', 'Заблокирован');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Не удалось');
         }
     }
 
@@ -387,7 +412,7 @@ class Admin extends MY_Controller {
             $this->tusers->update($Update, ['id' => $UID]);
             $this->setMessage('success', 'обновленный');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Не удается найти пользователя');
         }
     }
 
@@ -396,9 +421,23 @@ class Admin extends MY_Controller {
         if (!is_null($UID)) {
             $this->tusers->delete(['id' => $UID]);
             $this->tusersg->delete(['userid' => $UID]);
+            $ParName = dirname(APPPATH);
+            $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . md5($UID);
+            rmdir($Path);
             $this->setMessage('success', 'Пользователь удален');
         } else {
-            $this->setMessage('error', 'Нет ввод находки');
+            $this->setMessage('error', 'Не удается найти пользователя');
+        }
+    }
+
+    public function opendirectory() {
+        $UID = $this->input->post('uid');
+        $ParName = dirname(APPPATH);
+        $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . md5($UID);
+        try {
+            echo exec('explorer ' . $Path);
+        } catch (Exception $e) {
+            echo $e->getMessage();
         }
     }
 
@@ -462,6 +501,7 @@ class Admin extends MY_Controller {
                 'birthdate' => $TetData['birthdate'],
                 'notes1' => $TetData['note']
             ];
+
             $this->tusers->update($TData, ['id' => $TetData['userid']]);
             $this->ttetgroups->delete(['tetcherid' => $TetData['userid']]);
             foreach ($TetData['grops'] as $GroupID) {
@@ -479,20 +519,35 @@ class Admin extends MY_Controller {
             $TData = [
                 'image' => $TetData['image'],
                 'name' => $TetData['name'],
-                'cardid' => $TetData['name'],
+                'cardid' => $TetData['cardid'],
                 'parentname' => $TetData['mothername'],
                 'parentphone' => $TetData['motherphone'],
                 'phonenumber' => $TetData['phone'],
                 'birthdate' => $TetData['birthdate'],
                 'notes1' => $TetData['note']
             ];
-            $this->tusers->update($TData, ['id' => $TetData['userid']]);
-            $this->tusersg->delete(['userid' => $TetData['userid']]);
-            foreach ($TetData['grops'] as $GroupID) {
-                $this->tusersg->set(['userid' => $TetData['userid'], 'groupid' => $GroupID]);
+            $chk = $this->tusers->get(['cardid' => $TData['cardid']])[0];
+            if (is_null($chk)) {
+                $this->tusers->update($TData, ['id' => $TetData['userid']]);
+                $this->tusersg->delete(['userid' => $TetData['userid']]);
+                foreach ($TetData['grops'] as $GroupID) {
+                    $this->tusersg->set(['userid' => $TetData['userid'], 'groupid' => $GroupID]);
+                }
+                $this->setMessage('success', 'Данные обновлены');
+            } else {
+                if ($chk->id == $TetData['userid']) {
+                    unset($TData['cardid']);
+                    $this->tusers->update($TData, ['id' => $TetData['userid']]);
+                    $this->tusersg->delete(['userid' => $TetData['userid']]);
+                    foreach ($TetData['grops'] as $GroupID) {
+                        $this->tusersg->set(['userid' => $TetData['userid'], 'groupid' => $GroupID]);
+                    }
+                    $this->setMessage('success', 'Данные обновлены');
+                } else {
+                    $this->session->set_userdata('holddata', $TetData);
+                    $this->setMessage('error-msg', 'Этот номер карты существует в базе данных<br>Вы хотите продолжить и отключить студента <b>' . $chk->name . '</b>?');
+                }
             }
-
-            $this->setMessage('success', 'Данные обновлены');
         }
         redirect(base_url() . 'students');
     }

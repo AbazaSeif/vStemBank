@@ -429,6 +429,14 @@ function sunblock(id) {
         location.reload();
     });
 }
+function sopendir(id) {
+    var URL = $("#murl").val();
+    $.post(URL + 'opendirectory', {
+        uid: id
+    }, function () {
+        location.reload();
+    });
+}
 function sdelet(id) {
     var URL = $("#murl").val();
     $.post(URL + 'studdelete', {

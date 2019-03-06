@@ -29,17 +29,6 @@ class Users extends CI_Model {
         }
     }
 
-    public function getAnd($where1, $where2) {
-        $this->db->where($where1[0], $where1[1]);
-        $this->db->where($where2[0], $where2[1]);
-        $querey = $this->db->get($this->TableName);
-        if ($querey->result()) {
-            return $querey->result();
-        } else {
-            return null;
-        }
-    }
-
     public function set($data) {
         $this->db->insert($this->TableName, $data);
         $insert_id = $this->db->insert_id();

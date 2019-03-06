@@ -4,6 +4,5 @@
 <script src="<?php echo base_url(); ?>assest/js/easytimer.min.js"></script>
 <script src="<?php echo base_url(); ?>assest/js/datatables/dataTables.bootstrap4.js"></script>
 <script src="<?php echo base_url(); ?>assest/js/datatables/jquery.dataTables.min.js"></script>
-<script src="<?php echo base_url(); ?>assest/js/sweetalert/sweetalert.min.js"></script>
 <script src="<?php echo base_url(); ?>assest/js/actions.js"></script>
 </html>
