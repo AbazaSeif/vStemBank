@@ -242,10 +242,18 @@ class Home extends MY_Controller {
             for ($il = 0; $il <= count($DataPass); $il++) {
                 $Vot = $this->getvoting(['workday' => $DataPass[$il]->id]);
                 if (!is_null($Vot)) {
+                    $NumberOfStudent = 0;
+                    $CalVoting1 = 0;
+                    $CalVoting2 = 0;
                     foreach ($Vot as $v) {
-                        $DataPass[$il]->interest += $v->vot1;
-                        $DataPass[$il]->notinter += $v->vot2;
+                        $CalVoting1 += $v->vot1;
+                        $CalVoting2 += $v->vot2;
+                        $NumberOfStudent++;
                     }
+                    $DataPass[$il]->interest = $CalVoting1 / $NumberOfStudent;
+                    $DataPass[$il]->notinter = $CalVoting2 / $NumberOfStudent;
+                    $DataPass[$il]->interest = $DataPass[$il]->interest . '/' . $NumberOfStudent;
+                    $DataPass[$il]->notinter = $DataPass[$il]->notinter . '/' . $NumberOfStudent;
                 }
             }
             $Data['dReport'] = $DataPass;

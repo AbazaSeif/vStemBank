@@ -15,6 +15,8 @@ class Admin extends MY_Controller {
 
     public function __construct($config = array()) {
         parent::__construct($config);
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '2048M');
         if (!$this->session->isAdmin) {
             redirect(base_url() . 'home');
         }
@@ -50,7 +52,7 @@ class Admin extends MY_Controller {
         $Data = null;
         $Path = $this->config->item('SCANFILE');
         $Loop = 0;
-        while ($Loop <= 500) {
+        while ($Loop <= 200) {
             foreach (file($Path) as $line) {
                 if ((strlen($line) > 1) && (!empty($line))) {
                     $Data = $line;
@@ -435,7 +437,7 @@ class Admin extends MY_Controller {
         $ParName = dirname(APPPATH);
         $Path = $ParName . DIRECTORY_SEPARATOR . 'Users' . DIRECTORY_SEPARATOR . md5($UID);
         try {
-            echo exec('explorer ' . $Path);
+            echo exec('explorer.exe ' . $Path);
         } catch (Exception $e) {
             echo $e->getMessage();
         }

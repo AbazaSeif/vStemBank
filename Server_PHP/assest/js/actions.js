@@ -259,10 +259,10 @@ function checktime() {
 function startlesson() {
     var URL = $("#murl").val();
     var status = $("#btnstarttot").html();
-    if (status == 'Начните Урок') {
+    if (status == 'Начать урок') {
         $("#btnstarttot").removeClass('btn-success');
         $("#btnstarttot").addClass('btn-danger');
-        $("#btnstarttot").html('заверщить урок');
+        $("#btnstarttot").html('Завершить урок');
         var lblless = $("#labellesson").val();
         var groless = $("#groupidlesson").val();
         $.post(URL + 'startlessonf', {
@@ -273,7 +273,7 @@ function startlesson() {
     } else {
         $("#btnstarttot").removeClass('btn-danger');
         $("#btnstarttot").addClass('btn-success');
-        $("#btnstarttot").html('Начните Урок');
+        $("#btnstarttot").html('Начать урок');
         var groless = $("#groupidlesson").val();
         $.post(URL + 'endlessonf', {
             gro: groless
